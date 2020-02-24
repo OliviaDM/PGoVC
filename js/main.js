@@ -1,7 +1,7 @@
 // import * as THREE from '/three.js-master/build/three.js';
 
 function main (fs, vs) {
-    const vox_num = 5;
+    const vox_num = 10;
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
 
@@ -12,7 +12,7 @@ function main (fs, vs) {
     document.body.appendChild( renderer.domElement );
     const canvas = document.querySelector("canvas");
 
-    const grid = voxel_grid(1, vox_num, vox_num, vox_num);
+    const grid = voxel_grid(vox_num);
     grid.forEach( (voxel) => {
         console.log(voxel);
         scene.add( voxel );

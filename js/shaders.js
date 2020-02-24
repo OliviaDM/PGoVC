@@ -12,9 +12,10 @@ void main() {
 const frag_shade = `
 uniform vec3 colorA; 
 uniform vec3 colorB; 
+uniform vec3 vox_pos;
 varying vec3 vUv;
 
 void main() {
-    gl_FragColor = vec4(mix(colorA, colorB, vUv.z), 1.0);
+    gl_FragColor = vec4(1, 1, 1, 0.1);
 }
 `;
