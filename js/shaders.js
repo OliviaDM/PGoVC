@@ -10,12 +10,17 @@ void main() {
 `;
 
 const frag_shade = `
-uniform vec3 colorA; 
-uniform vec3 colorB; 
 uniform vec3 vox_pos;
+uniform vec3 sphere_centre;
+uniform int sphere_radius;
 varying vec3 vUv;
 
 void main() {
-    gl_FragColor = vec4(1, 1, 1, 0.1);
+    float dist = distance(vUv+vox_pos, sphere_centre);
+    if (dist < 1.0) {
+        gl_FragColor = vec4(1, 1, 1, 1.0 - dist);
+    } else {
+        gl_FragColor = vec4(1, 1, 1, 0);
+    }
 }
 `;
