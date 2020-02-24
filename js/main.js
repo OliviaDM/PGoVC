@@ -1,6 +1,7 @@
 // import * as THREE from '/three.js-master/build/three.js';
 
 function main (fs, vs) {
+    const vox_num = 5;
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
 
@@ -11,8 +12,11 @@ function main (fs, vs) {
     document.body.appendChild( renderer.domElement );
     const canvas = document.querySelector("canvas");
 
-    const cube = cloud(fs, vs);
-    scene.add( cube );
+    const grid = voxel_grid(1, vox_num, vox_num, vox_num);
+    grid.forEach( (voxel) => {
+        console.log(voxel);
+        scene.add( voxel );
+    });
 
     camera.position.z = 5;
 
@@ -60,8 +64,8 @@ function main (fs, vs) {
     
 
     function rotateScene(deltaX, deltaY) {
-        cube.rotation.y += deltaX / 100;
-        cube.rotation.x += deltaY / 100;
+        scene.rotation.y += deltaX / 100;
+        scene.rotation.x += deltaY / 100;
     }
 
 
