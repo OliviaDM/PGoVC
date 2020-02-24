@@ -2,6 +2,8 @@
 
 function main (fs, vs) {
     const vox_num = 10;
+
+
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
 
@@ -12,9 +14,10 @@ function main (fs, vs) {
     document.body.appendChild( renderer.domElement );
     const canvas = document.querySelector("canvas");
 
-    const grid = voxel_grid(vox_num);
+
+
+    const grid = voxel_grid(vox_num, fs, vs);
     grid.forEach( (voxel) => {
-        console.log(voxel);
         scene.add( voxel );
     });
 
