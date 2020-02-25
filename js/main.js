@@ -1,4 +1,7 @@
-// import * as THREE from '/three.js-master/build/three.js';
+// PASS THE VOXEL BOX COORDINATES TO VERT SHADE to convert the postitions for sampling based on camera
+// REFACTOR HARDCODED VALUES: dim (need in frag_shade for checking inside sampling)
+// REFACTOR SHADER REFERENCES: would be p cool to be able to switch shaders
+// USER INTERFACE??? be able to select shader, number of voxel boxes
 
 function main (fs, vs) {
     const vox_num = 10;
