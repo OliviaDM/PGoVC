@@ -17,13 +17,13 @@ void main() {
     
     vec4 modelViewPosition = modelViewMatrix * vec4(position, 1.0);
     
-    new_vox_pos = projectionMatrix * (modelViewMatrix * vec4(vox_pos, 1.0));
-    new_x = projectionMatrix * (modelViewMatrix * vec4(vox_x, 1.0));
-    new_y = projectionMatrix * (modelViewMatrix * vec4(vox_y, 1.0));
-    new_z = projectionMatrix * (modelViewMatrix * vec4(vox_z, 1.0));
+    new_vox_pos = projectionMatrix * (modelViewMatrix * vec4(0.0, 0.0, 0.0, 1.0));
+    new_x = projectionMatrix * (modelViewMatrix * vec4(0.1, 0.0, 0.0, 1.0));
+    new_y = projectionMatrix * (modelViewMatrix * vec4(0.0, 0.1, 0.0, 1.0));
+    new_z = projectionMatrix * (modelViewMatrix * vec4(0.0, 0.0, 1.0, 1.0));
     
-    vUv = projectionMatrix * modelViewPosition; 
-    gl_Position = vUv; 
+    vUv = projectionMatrix * (modelViewMatrix * vec4(position, 1.0));
+    gl_Position = projectionMatrix * modelViewPosition;  
 }
 `;
 
@@ -48,7 +48,7 @@ void main() {
     vec3 step_dir = normalize(cur_pos - camera_pos);
     bool inside = true;
 
-    gl_FragColor = vec4(vox_pos.xyz, 1.0);
+    gl_FragColor = vec4(vUv.xyz - new_vox_pos.xyz, 1.0);
     
 }   
 `;
