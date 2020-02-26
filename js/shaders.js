@@ -48,7 +48,17 @@ void main() {
     vec3 step_dir = normalize(cur_pos - camera_pos);
     bool inside = true;
 
-    gl_FragColor = vec4(vUv.xyz - new_vox_pos.xyz, 1.0);
+    float self_product = dot(new_y.xyz - new_vox_pos.xyz, new_y.xyz - new_vox_pos.xyz);
+
+    float dot_x = dot(vUv.xyz - new_vox_pos.xyz, (1.0/sqrt(self_product))*(new_x.xyz - new_vox_pos.xyz))/sqrt(dot(new_y.xyz - new_vox_pos.xyz, new_y.xyz - new_vox_pos.xyz));
+    float dot_y = dot(vUv.xyz - new_vox_pos.xyz, new_y.xyz - new_vox_pos.xyz)/dot(new_y.xyz - new_vox_pos.xyz, new_y.xyz - new_vox_pos.xyz);
+    float dot_z = dot(vUv.xyz - new_vox_pos.xyz, new_z.xyz - new_vox_pos.xyz)/dot(new_z.xyz - new_vox_pos.xyz, new_z.xyz - new_vox_pos.xyz);
+
+    if (dot_x >= 0.7) {
+        gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+    } else {
+        gl_FragColor = vec4(1.0, 1.0, 1.0, dot_x);
+    }
     
 }   
 `;
