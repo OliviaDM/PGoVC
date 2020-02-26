@@ -11,16 +11,16 @@ uniform float box_dim;
 
 void main() {
     
-    vec3 vox_x = vox_pos + vec3(box_dim, 0.0, 0.0);
-    vec3 vox_y = vox_pos + vec3(0.0, box_dim, 0.0);
-    vec3 vox_z = vox_pos + vec3(0.0, 0.0, box_dim);
+    vec3 vox_x = vox_pos + vec3(box_dim/2.0, 0.0, 0.0);
+    vec3 vox_y = vox_pos + vec3(0.0, box_dim/2.0, 0.0);
+    vec3 vox_z = vox_pos + vec3(0.0, 0.0, box_dim/2.0);
     
     vec4 modelViewPosition = modelViewMatrix * vec4(position, 1.0);
     
-    new_vox_pos = projectionMatrix * (modelViewMatrix * vec4(0.0, 0.0, 0.0, 1.0));
-    new_x = projectionMatrix * (modelViewMatrix * vec4(0.1, 0.0, 0.0, 1.0));
-    new_y = projectionMatrix * (modelViewMatrix * vec4(0.0, 0.1, 0.0, 1.0));
-    new_z = projectionMatrix * (modelViewMatrix * vec4(0.0, 0.0, 1.0, 1.0));
+    new_vox_pos = projectionMatrix * (modelViewMatrix * vec4(-box_dim/2.0, -box_dim/2.0, -box_dim/2.0, 1.0));
+    new_x = projectionMatrix * (modelViewMatrix * vec4(box_dim/2.0, -box_dim/2.0, -box_dim/2.0, 1.0));
+    new_y = projectionMatrix * (modelViewMatrix * vec4(-box_dim/2.0, box_dim/2.0, -box_dim/2.0, 1.0));
+    new_z = projectionMatrix * (modelViewMatrix * vec4(-box_dim/2.0, -box_dim/2.0, box_dim/2.0, 1.0));
     
     vUv = projectionMatrix * (modelViewMatrix * vec4(position, 1.0));
     gl_Position = projectionMatrix * modelViewPosition;  
@@ -50,16 +50,22 @@ void main() {
 
     float self_product = dot(new_y.xyz - new_vox_pos.xyz, new_y.xyz - new_vox_pos.xyz);
 
-    float dot_x = dot(vUv.xyz - new_vox_pos.xyz, (1.0/sqrt(self_product))*(new_x.xyz - new_vox_pos.xyz))/sqrt(dot(new_y.xyz - new_vox_pos.xyz, new_y.xyz - new_vox_pos.xyz));
+    float dot_x = dot(vUv.xyz - new_vox_pos.xyz, new_x.xyz - new_vox_pos.xyz);
     float dot_y = dot(vUv.xyz - new_vox_pos.xyz, new_y.xyz - new_vox_pos.xyz)/dot(new_y.xyz - new_vox_pos.xyz, new_y.xyz - new_vox_pos.xyz);
     float dot_z = dot(vUv.xyz - new_vox_pos.xyz, new_z.xyz - new_vox_pos.xyz)/dot(new_z.xyz - new_vox_pos.xyz, new_z.xyz - new_vox_pos.xyz);
 
-    if (dot_x >= 0.7) {
+    if (length(vUv.xyz - new_vox_pos.xyz) < 0.01) {
+
+        gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+    } else if (length(vUv.xyz - new_x.xyz) < 0.01) {
         gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+    } else if (length(vUv.xyz - new_y.xyz) < 0.01) {
+        gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);
+    } else if (length(vUv.xyz - new_z.xyz) < 0.01) {
+        gl_FragColor = vec4(0.0, 0.0, 1.0, 1.0);
     } else {
-        gl_FragColor = vec4(1.0, 1.0, 1.0, dot_x);
+        gl_FragColor = vec4(1.0, 1.0, 1.0, 0.1);
     }
-    
 }   
 `;
 
