@@ -42,16 +42,16 @@ varying vec4 new_y;
 varying vec4 new_z;
 
 bool is_inside_vox(in vec3 pos) {
-    float scalar_comp_x = dot(pos - new_vox_pos.xyz, (new_x.xyz - new_vox_pos.xyz)/length(new_x.xyz - new_vox_pos.xyz))/length(new_x.xyz - new_vox_pos.xyz);
-    float scalar_comp_y = dot(pos - new_vox_pos.xyz, (new_y.xyz - new_vox_pos.xyz)/length(new_y.xyz - new_vox_pos.xyz))/length(new_y.xyz - new_vox_pos.xyz);
-    float scalar_comp_z = dot(pos - new_vox_pos.xyz, (new_z.xyz - new_vox_pos.xyz)/length(new_z.xyz - new_vox_pos.xyz))/length(new_z.xyz - new_vox_pos.xyz);
+    float scalar_comp_x = dot(pos - new_vox_pos.xyz, normalize(new_x.xyz - new_vox_pos.xyz));
+    float scalar_comp_y = dot(pos - new_vox_pos.xyz, normalize(new_y.xyz - new_vox_pos.xyz));
+    float scalar_comp_z = dot(pos - new_vox_pos.xyz, normalize(new_z.xyz - new_vox_pos.xyz));
     return ((scalar_comp_x > 0.0) && (scalar_comp_x < 1.0) && (scalar_comp_y > 0.0) && (scalar_comp_y < 1.0) && (scalar_comp_z > 0.0) && (scalar_comp_z < 1.0));
 }
 
 vec3 scalar_val(in vec3 pos) {
-    float scalar_comp_x = dot(pos - new_vox_pos.xyz, (new_x.xyz - new_vox_pos.xyz)/length(new_x.xyz - new_vox_pos.xyz))/length(new_x.xyz - new_vox_pos.xyz);
-    float scalar_comp_y = dot(pos - new_vox_pos.xyz, (new_y.xyz - new_vox_pos.xyz)/length(new_y.xyz - new_vox_pos.xyz))/length(new_y.xyz - new_vox_pos.xyz);
-    float scalar_comp_z = dot(pos - new_vox_pos.xyz, (new_z.xyz - new_vox_pos.xyz)/length(new_z.xyz - new_vox_pos.xyz))/length(new_z.xyz - new_vox_pos.xyz);
+    float scalar_comp_x = dot(pos - new_vox_pos.xyz, normalize(new_x.xyz - new_vox_pos.xyz));
+    float scalar_comp_y = dot(pos - new_vox_pos.xyz, normalize(new_y.xyz - new_vox_pos.xyz));
+    float scalar_comp_z = dot(pos - new_vox_pos.xyz, normalize(new_z.xyz - new_vox_pos.xyz));
     return vec3(scalar_comp_x, scalar_comp_y,scalar_comp_z);
 }
 
@@ -72,21 +72,21 @@ void main() {
     for (int i = 0; i < 500; i += 1) {
         cummulative_value += 0.1;
         cur_pos = cur_pos + step_dir*step_size;
-        // if (!is_inside_vox(cur_pos)) {
-        //     break;
-        // }
+        if (!is_inside_vox(cur_pos)) {
+            break;
+        }
         count += 1.0;
     }
     
-    // if (length(vUv.xyz - new_vox_pos.xyz) < 0.01) {
-    //     gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
-    // } else if (length(vUv.xyz - new_x.xyz) < 0.01) {
-    //     gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
-    // } else if (length(vUv.xyz - new_y.xyz) < 0.01) {
-    //     gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);
-    // } else if (length(vUv.xyz - new_z.xyz) < 0.01) {
-    //     gl_FragColor = vec4(0.0, 0.0, 1.0, 1.0);
-    // } else {
+    if (length(vUv.xyz - new_vox_pos.xyz) < 0.01) {
+        gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+    } else if (length(vUv.xyz - new_x.xyz) < 0.01) {
+        gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+    } else if (length(vUv.xyz - new_y.xyz) < 0.01) {
+        gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);
+    } else if (length(vUv.xyz - new_z.xyz) < 0.01) {
+        gl_FragColor = vec4(0.0, 0.0, 1.0, 1.0);
+    } else {
     //     if (scalar_val(cur_pos).x > 1.0) {
     //         gl_FragColor = vec4(1.0, 0.0, 0.0, 0.2);
     //     } else if (scalar_val(cur_pos).y > 1.0) {
@@ -102,10 +102,13 @@ void main() {
     //     } else {
     //         gl_FragColor = vec4(scalar_val(cur_pos), 0.05);
     //     }
-    // }
 
-    gl_FragColor = vec4(scalar_val(cur_pos), 1.0);
-    
+
+           
+        gl_FragColor = vec4(scalar_val(vUv.xyz), 1.0);
+    }
+
+     
 }`;
 
 // general sampling function: while loop which cumulates the final opacity
