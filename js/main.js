@@ -26,7 +26,7 @@ function main (fs, vs, bfs, bvs) {
     const back_scene = new THREE.Scene();
     const back_cube = add_back_material(volume, bfs, bvs);
     back_scene.add( back_cube );
-    var axesHelper = new THREE.AxesHelper( 2 );
+    var axesHelper = new THREE.AxesHelper( 3 );
     back_scene.add( axesHelper );
     
     
@@ -35,7 +35,7 @@ function main (fs, vs, bfs, bvs) {
     const scene = new THREE.Scene();
     const volume_cube = add_material(volume, fs, vs);
     scene.add( volume_cube );
-    var axesHelper2 = new THREE.AxesHelper( 2 );
+    var axesHelper2 = new THREE.AxesHelper( 3 );
     scene.add( axesHelper2 );
 
 
@@ -70,6 +70,17 @@ function main (fs, vs, bfs, bvs) {
         mouseDown = false;
     }
 
+    let cur_scene = scene;
+
+    function switchScene(evt) {
+        evt.preventDefault();
+        if (cur_scene === scene) {
+            cur_scene = back_scene;
+        } else {
+            cur_scene = scene;
+        }
+    }
+
     canvas.addEventListener('mousemove', function (e) {
         onMouseMove(e);
     }, false);
@@ -78,6 +89,9 @@ function main (fs, vs, bfs, bvs) {
     }, false);
     canvas.addEventListener('mouseup', function (e) {
         onMouseUp(e);
+    }, false);
+    canvas.addEventListener('contextmenu', function (e) {
+        switchScene(e);
     }, false);
     
 
@@ -93,7 +107,7 @@ function main (fs, vs, bfs, bvs) {
 
     function animate() {
         requestAnimationFrame( animate );
-        renderer.render( scene, camera );
+        renderer.render( cur_scene, camera );
     }
     animate();
 };
