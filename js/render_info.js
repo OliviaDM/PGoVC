@@ -13,15 +13,7 @@ function add_back_material (geom, bfs, bvs) {
 
 function add_material (geom, fs, vs) {
 
-    let uniforms = {
-        vox_pos: {type: 'vec3', value: {x: 0, y: 0, z: 0}},
-        sphere_centre: {type: 'vec3', value: {x: 0, y: 0, z: 0}},
-        sphere_radius: {type: 'int', value: 1},
-        box_dim: {type: 'float', value: 2},
-    }
-
     const material = new THREE.ShaderMaterial({
-        uniforms: uniforms,
         transparent: true,
         fragmentShader: fs,
         vertexShader: vs,

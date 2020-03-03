@@ -18,7 +18,7 @@ function main (fs, vs, bfs, bvs) {
     
 
     //CREATE THE CUBE
-    const dim = 2;
+    const dim = 4;
     const volume = new THREE.BoxGeometry( dim, dim, dim );
     
     
