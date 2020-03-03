@@ -3,12 +3,11 @@
 // REFACTOR SHADER REFERENCES: would be p cool to be able to switch shaders
 // USER INTERFACE??? be able to select shader, number of voxel boxes
 
-function main (fs, vs) {
-    const vox_num = 10;
-
-
-    const scene = new THREE.Scene();
+function main (fs, vs, bfs, bvs) {
+    
+    //CAMERA AND RENDERER CREATION
     const camera = new THREE.OrthographicCamera( -4, 4, 4, -4, 0.1, 1000 );
+    camera.position.z = 5;
     
     const renderer = new THREE.WebGLRenderer({
         antialias: true
@@ -17,16 +16,27 @@ function main (fs, vs) {
     document.body.appendChild( renderer.domElement );
     const canvas = document.querySelector("canvas");
     
-    camera.position.z = 5;
 
-
-    const grid = voxel_grid(vox_num, fs, vs);
-    grid.forEach( (voxel) => {
-        scene.add( voxel );
-    });
-    const axisHelper = new THREE.AxesHelper(3);
-    scene.add( axisHelper );
-
+    //CREATE THE CUBE
+    const dim = 2;
+    const volume = new THREE.BoxGeometry( dim, dim, dim );
+    
+    
+    //BACKPOSITION RENDERING
+    const back_scene = new THREE.Scene();
+    const back_cube = add_back_material(volume, bfs, bvs);
+    back_scene.add( back_cube );
+    var axesHelper = new THREE.AxesHelper( 2 );
+    back_scene.add( axesHelper );
+    
+    
+    
+    //REAL SCENE INFO
+    const scene = new THREE.Scene();
+    const volume_cube = add_material(volume, fs, vs);
+    scene.add( volume_cube );
+    var axesHelper2 = new THREE.AxesHelper( 2 );
+    scene.add( axesHelper2 );
 
 
 
@@ -74,6 +84,8 @@ function main (fs, vs) {
     function rotateScene(deltaX, deltaY) {
         scene.rotation.y += deltaX / 100;
         scene.rotation.x += deltaY / 100;
+        back_scene.rotation.y += deltaX / 100;
+        back_scene.rotation.x += deltaY / 100;
     }
 
 
