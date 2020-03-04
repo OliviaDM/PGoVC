@@ -3,10 +3,10 @@
 // REFACTOR SHADER REFERENCES: would be p cool to be able to switch shaders
 // USER INTERFACE??? be able to select shader, number of voxel boxes
 
-function main (fs, vs, bfs, bvs) {
+function main () {
 
 
-
+    console.log(frag_shade(1));
 
     
     //CAMERA AND RENDERER CREATION
@@ -33,13 +33,14 @@ function main (fs, vs, bfs, bvs) {
 
 
     //CREATE THE CLOUD INFORMATION
-    const clouds = generate_clouds(1);
+    const num_clouds = 10;
+    const clouds = generate_clouds(num_clouds);
     console.log(clouds);
     
     
     //BACKPOSITION RENDERING
     const back_scene = new THREE.Scene();
-    const back_cube = add_back_material(volume, bfs, bvs);
+    const back_cube = add_back_material(volume, back_frag_shade, back_vert_shade);
     back_scene.add( back_cube );
     var axesHelper = new THREE.AxesHelper( 3 );
     back_scene.add( axesHelper );
@@ -49,7 +50,7 @@ function main (fs, vs, bfs, bvs) {
     
     //REAL SCENE INFO
     const scene = new THREE.Scene();
-    const volume_cube = add_material(volume, fs, vs, back_buffer, 700, 700, clouds);
+    const volume_cube = add_material(volume, frag_shade(num_clouds), vert_shade(num_clouds), back_buffer, 700, 700, clouds);
     scene.add( volume_cube );
     var axesHelper2 = new THREE.AxesHelper( 3 );
     scene.add( axesHelper2 );
