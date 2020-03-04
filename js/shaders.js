@@ -1,3 +1,5 @@
+
+//MAIN SHADERS
 const vert_shade = `
 varying vec4 cur_pos; 
 
@@ -8,8 +10,6 @@ void main() {
     gl_Position = cur_pos;  
 }
 `;
-
-// 
 
 const frag_shade = `
 varying vec4 cur_pos;
@@ -22,13 +22,17 @@ void main() {
 
     vec2 screen_coord = gl_FragCoord.xy;
     vec2 norm_screen_coord = vec2(screen_coord.x / window_w, screen_coord.y / window_h );
-    gl_FragColor = texture2D( back_text, vec2(0.25, 0.5) );
+    gl_FragColor = texture2D( back_text, vec2(norm_screen_coord.x, norm_screen_coord.y) );
 }`;
 
-// general sampling function: while loop which cumulates the final opacity
-// general colour function for a single sample point (will eventually call mulitple functions)
-// test the inclusion of a point inside the cube
 
+
+
+
+
+
+
+//BACK POSITION SHADERS
 const back_vert_shade = `
 varying vec4 cur_pos; 
 

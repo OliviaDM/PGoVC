@@ -131,15 +131,17 @@ function main (fs, vs, bfs, bvs) {
     //ANIMATE
     function animate() {
         requestAnimationFrame( animate );
+
+        //RENDER TO BACK BUFFER
         renderer.setRenderTarget( back_buffer );
+        renderer.setClearColor( 0xf2c4de, 1 );
         renderer.render( back_scene, camera );
+        
+        //RENDER THE REAL SCENE
         renderer.setRenderTarget( null );
-
-        // var material = new THREE.SpriteMaterial( { map: back_buffer.texture, color: 0xffffff } );
-        // var sprite = new THREE.Sprite( material );
-        // scene.add( sprite );
-
+        renderer.setClearColor( 0xc4e6f2, 1 );
         renderer.render( cur_scene, camera );
+
     }
     animate();
 };

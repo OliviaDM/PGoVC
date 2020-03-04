@@ -30,9 +30,9 @@ function add_material (geom, fs, vs, text, window_w, window_h) {
         side: THREE.FrontSide,
     });
 
-    // vox = new THREE.Mesh( geom, material );
-    const temp_mat = new THREE.MeshBasicMaterial({map:text.texture});
-    vox = new THREE.Mesh(geom, temp_mat);
+    vox = new THREE.Mesh( geom, material );
+    // const temp_mat = new THREE.MeshBasicMaterial({map:text.texture});
+    // vox = new THREE.Mesh(geom, temp_mat);
 
     return vox;
 };
