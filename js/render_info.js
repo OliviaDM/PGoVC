@@ -1,4 +1,4 @@
-function add_back_material (geom, bfs, bvs) {
+function add_back_material(geom, bfs, bvs) {
 
     const material = new THREE.ShaderMaterial({
         fragmentShader: bfs,
@@ -11,7 +11,7 @@ function add_back_material (geom, bfs, bvs) {
     return vol;
 };
 
-function add_material (geom, fs, vs, text, window_w, window_h) {
+function add_material(geom, fs, vs, text, window_w, window_h, clouds) {
 
     const uniforms = {
         back_text: {
@@ -20,6 +20,7 @@ function add_material (geom, fs, vs, text, window_w, window_h) {
         },
         window_w: { type: "float", value: window_w },
         window_h: { type: "float", value: window_h },
+        clouds: { type: "v3v", value: clouds },
     };
 
     const material = new THREE.ShaderMaterial({

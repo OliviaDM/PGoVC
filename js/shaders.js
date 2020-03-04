@@ -1,27 +1,54 @@
 
 //MAIN SHADERS
 const vert_shade = `
+uniform vec4 clouds[1];
+
 varying vec4 temp_front_pos; 
+varying vec4 new_clouds[1];
+varying float radiuses[1];
+
+vec4 translate_point(vec3 point) {
+    return projectionMatrix * (modelViewMatrix * vec4(point, 1.0));
+}
 
 void main() {
     
+    for (int i = 0; i < 1; i++) {
+        new_clouds[i] = translate_point(clouds[i].xyz);
+        radiuses[i] = clouds[i].w;
+    }
+    
     vec4 modelViewPosition = modelViewMatrix * vec4(position, 1.0);
     temp_front_pos = projectionMatrix * modelViewPosition;  
-    gl_Position = temp_front_pos;  
+    gl_Position = temp_front_pos; 
 }
 `;
 
 const frag_shade = `
 varying vec4 temp_front_pos;
+varying vec4 new_clouds[1];
+varying float radiuses[1];
 
 uniform sampler2D back_text;
 uniform float window_w;
 uniform float window_h;
 
 
+//SAMPLING FUNCTIONS
+float cloud_density(vec4 cld, float rad, vec3 pos) {
+    vec3 cloud_center = vec3(cld.xy, (cld.z + 0.99)*100.00)*0.5 + vec3(0.5, 0.5, 0.5);
+    float val = (rad - length(cloud_center - pos)) / rad;
+    return max(0.0, val);
+}
+
+float sample_clouds(vec3 pos) {
+    float val = 0.0;
+    val += cloud_density(new_clouds[0], radiuses[0], pos);
+    return val;
+}
 
 float sample_point(vec3 pos) {
-    return 0.01;
+    return sample_clouds(pos);
 }
 
 

@@ -16,7 +16,7 @@ function main (fs, vs, bfs, bvs) {
     const renderer = new THREE.WebGLRenderer({
         antialias: true
     });
-    renderer.setSize( window.innerWidth, window.innerHeight );
+    renderer.setSize( 700, 700 );
     document.body.appendChild( renderer.domElement );
     const canvas = document.querySelector("canvas");
 
@@ -30,6 +30,11 @@ function main (fs, vs, bfs, bvs) {
     //CREATE THE CUBE
     const dim = 4;
     const volume = new THREE.BoxGeometry( dim, dim, dim );
+
+
+    //CREATE THE CLOUD INFORMATION
+    const clouds = generate_clouds(1);
+    console.log(clouds);
     
     
     //BACKPOSITION RENDERING
@@ -39,15 +44,16 @@ function main (fs, vs, bfs, bvs) {
     var axesHelper = new THREE.AxesHelper( 3 );
     back_scene.add( axesHelper );
 
-    const back_buffer = new THREE.WebGLRenderTarget( window.innerWidth, window.innerHeight);
+    const back_buffer = new THREE.WebGLRenderTarget( 700, 700);
     
     
     //REAL SCENE INFO
     const scene = new THREE.Scene();
-    const volume_cube = add_material(volume, fs, vs, back_buffer, window.innerWidth, window.innerHeight);
+    const volume_cube = add_material(volume, fs, vs, back_buffer, 700, 700, clouds);
     scene.add( volume_cube );
     var axesHelper2 = new THREE.AxesHelper( 3 );
     scene.add( axesHelper2 );
+
 
 
 
@@ -139,7 +145,8 @@ function main (fs, vs, bfs, bvs) {
         
         //RENDER THE REAL SCENE
         renderer.setRenderTarget( null );
-        renderer.setClearColor( 0xc4e6f2, 1 );
+        renderer.setClearColor( 0x000000, 1 );
+        // renderer.setClearColor( 0xc4e6f2, 1 );
         renderer.render( cur_scene, camera );
 
     }
