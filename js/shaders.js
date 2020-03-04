@@ -43,7 +43,7 @@ float cloud_density(vec4 cld, float rad, vec3 pos) {
 
 float sample_clouds(vec3 pos) {
     float val = 0.0;
-    val += cloud_density(new_clouds[0], radiuses[0], pos)*0.05;
+    val += cloud_density(new_clouds[0], radiuses[0], pos);
     return val;
 }
 
@@ -69,7 +69,7 @@ void main() {
 
     //                                  SAMPLE LOOP
     for (int i = 0; i < 200; i++) {
-        total_alpha += sample_point(cur_pos.xyz);
+        total_alpha += sample_point(cur_pos.xyz) / 20.0;
         cur_pos += step_dir;
         if (cur_pos.z >= back_pos.z) {
             break;
