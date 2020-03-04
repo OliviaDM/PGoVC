@@ -4,6 +4,10 @@
 // USER INTERFACE??? be able to select shader, number of voxel boxes
 
 function main (fs, vs, bfs, bvs) {
+
+
+
+
     
     //CAMERA AND RENDERER CREATION
     const camera = new THREE.OrthographicCamera( -4, 4, 4, -4, 0.1, 1000 );
@@ -15,6 +19,12 @@ function main (fs, vs, bfs, bvs) {
     renderer.setSize( window.innerWidth, window.innerHeight );
     document.body.appendChild( renderer.domElement );
     const canvas = document.querySelector("canvas");
+
+
+
+
+
+
     
 
     //CREATE THE CUBE
@@ -28,18 +38,28 @@ function main (fs, vs, bfs, bvs) {
     back_scene.add( back_cube );
     var axesHelper = new THREE.AxesHelper( 3 );
     back_scene.add( axesHelper );
-    
+
+    const back_buffer = new THREE.WebGLRenderTarget( window.innerWidth, window.innerHeight);
     
     
     //REAL SCENE INFO
     const scene = new THREE.Scene();
-    const volume_cube = add_material(volume, fs, vs);
+    const volume_cube = add_material(volume, fs, vs, back_buffer, window.innerWidth, window.innerHeight);
     scene.add( volume_cube );
     var axesHelper2 = new THREE.AxesHelper( 3 );
     scene.add( axesHelper2 );
 
 
 
+
+
+
+
+
+
+
+
+    //USER INTERACTION
     let mouseDown = false,
         mouseX = 0,
         mouseY = 0;
@@ -105,8 +125,20 @@ function main (fs, vs, bfs, bvs) {
 
 
 
+
+
+
+    //ANIMATE
     function animate() {
         requestAnimationFrame( animate );
+        renderer.setRenderTarget( back_buffer );
+        renderer.render( back_scene, camera );
+        renderer.setRenderTarget( null );
+
+        // var material = new THREE.SpriteMaterial( { map: back_buffer.texture, color: 0xffffff } );
+        // var sprite = new THREE.Sprite( material );
+        // scene.add( sprite );
+
         renderer.render( cur_scene, camera );
     }
     animate();
