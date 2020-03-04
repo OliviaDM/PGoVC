@@ -43,7 +43,7 @@ float cloud_density(vec4 cld, float rad, vec3 pos) {
 
 float sample_clouds(vec3 pos) {
     float val = 0.0;
-    val += cloud_density(new_clouds[0], radiuses[0], pos);
+    val += cloud_density(new_clouds[0], radiuses[0], pos)*0.05;
     return val;
 }
 
