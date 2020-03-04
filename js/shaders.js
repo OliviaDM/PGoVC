@@ -73,7 +73,7 @@ function frag_shade(num_clouds) {
 
         //                                  SAMPLE LOOP
         for (int i = 0; i < 200; i++) {
-            total_alpha += sample_point(cur_pos.xyz) / 20.0;
+            total_alpha += sample_point(cur_pos.xyz) / 40.0;
             cur_pos += step_dir;
             if (cur_pos.z >= back_pos.z) {
                 break;

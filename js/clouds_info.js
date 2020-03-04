@@ -7,5 +7,5 @@ function generate_clouds(num) {
 }
 
 function generate_a_cloud() {
-    return new THREE.Vector4(Math.random(), Math.random(), Math.random(), Math.random()*0.1);
+    return new THREE.Vector4(Math.random()*2 - 1, Math.random()*2 - 1, Math.random()*2 - 1, Math.random()*0.2);
 }
