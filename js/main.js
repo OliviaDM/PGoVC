@@ -33,7 +33,7 @@ function main () {
 
 
     //CREATE THE CLOUD INFORMATION
-    const num_clouds = 10;
+    const num_clouds = 12;
     const clouds = generate_clouds(num_clouds);
     console.log(clouds);
     
@@ -42,8 +42,8 @@ function main () {
     const back_scene = new THREE.Scene();
     const back_cube = add_back_material(volume, back_frag_shade, back_vert_shade);
     back_scene.add( back_cube );
-    var axesHelper = new THREE.AxesHelper( 3 );
-    back_scene.add( axesHelper );
+    // var axesHelper = new THREE.AxesHelper( 3 );
+    // back_scene.add( axesHelper );
 
     const back_buffer = new THREE.WebGLRenderTarget( 700, 700);
     
@@ -52,8 +52,8 @@ function main () {
     const scene = new THREE.Scene();
     const volume_cube = add_material(volume, frag_shade(num_clouds), vert_shade(num_clouds), back_buffer, 700, 700, clouds);
     scene.add( volume_cube );
-    var axesHelper2 = new THREE.AxesHelper( 3 );
-    scene.add( axesHelper2 );
+    // var axesHelper2 = new THREE.AxesHelper( 3 );
+    // scene.add( axesHelper2 );
 
 
 

@@ -38,10 +38,13 @@ function frag_shade(num_clouds) {
     uniform float window_h;
 
 
+    
+
+
     //SAMPLING FUNCTIONS
     float cloud_density(vec4 cld, float rad, vec3 pos) {
         vec3 cloud_center = vec3(cld.xy, (cld.z + 0.99)*100.00)*0.5 + vec3(0.5, 0.5, 0.5);
-        float val = (rad - length(cloud_center - pos)) / rad;
+        float val = ((rad - length(cloud_center - pos)) / rad)*0.7;
         return max(0.0, val);
     }
 
@@ -54,6 +57,13 @@ function frag_shade(num_clouds) {
     float sample_point(vec3 pos) {
         return sample_clouds(pos);
     }
+
+
+
+
+
+
+
 
 
 
