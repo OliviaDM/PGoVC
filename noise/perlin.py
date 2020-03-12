@@ -71,8 +71,11 @@ pixdata = []
 # for k in range (0, 700):
 for i in range (0, 700):
     for j in range (0,700):
+        small_p = perlin(255*float(i)/700, 255*float(j)/700, 0)*255
+        medium_p = perlin(70*float(i)/700, 70*float(j)/700, 0)*255
+        big_p = perlin(20*float(i)/700, 20*float(j)/700, 0)*255
 
-        pixdata.append(perlin(255*float(i)/700, 255*float(j)/700, 0)*255)
+        pixdata.append((small_p + big_p*4 + medium_p*3)/8)
         print(i, j)
 im.putdata(pixdata)
 im.save('test.png')
