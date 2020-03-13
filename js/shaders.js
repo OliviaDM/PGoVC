@@ -34,6 +34,7 @@ function frag_shade(num_clouds) {
     varying float radiuses[${num_clouds}];
 
     uniform sampler2D back_text;
+    uniform sampler2D perlin;
     uniform float window_w;
     uniform float window_h;
 
@@ -80,6 +81,7 @@ function frag_shade(num_clouds) {
         //                                  GET BACK POSITION OF CUBE
         vec2 screen_coord = gl_FragCoord.xy;
         vec4 back_pos = texture2D( back_text, vec2(screen_coord.x / window_w, screen_coord.y / window_h) );
+        vec4 perlin_noise = texture2D( perlin, vec2(screen_coord.x / window_w, screen_coord.y / window_h) );
         
         
         //                                  SET UP
@@ -100,7 +102,8 @@ function frag_shade(num_clouds) {
 
         // float diff = back_pos.z - front_pos.z;
 
-        gl_FragColor = vec4(1.0, 1.0, 1.0, total_alpha);
+        gl_FragColor = vec4(1.0, 1.0, 1.0, total_alpha - perlin_noise.x*0.05);
+
     }`;
     return fs;
 }

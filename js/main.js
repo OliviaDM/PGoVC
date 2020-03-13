@@ -5,9 +5,6 @@
 
 function main () {
 
-
-    console.log(frag_shade(1));
-
     
     //CAMERA AND RENDERER CREATION
     const camera = new THREE.OrthographicCamera( -4, 4, 4, -4, 0.1, 1000 );
@@ -35,7 +32,8 @@ function main () {
     //CREATE THE CLOUD INFORMATION
     const num_clouds = 12;
     const clouds = generate_clouds(num_clouds);
-    console.log(clouds);
+
+    const perlin_n = new THREE.TextureLoader().load( 'noise/01perlin_contrasted.png' );
     
     
     //BACKPOSITION RENDERING
@@ -50,7 +48,7 @@ function main () {
     
     //REAL SCENE INFO
     const scene = new THREE.Scene();
-    const volume_cube = add_material(volume, frag_shade(num_clouds), vert_shade(num_clouds), back_buffer, 700, 700, clouds);
+    const volume_cube = add_material(volume, frag_shade(num_clouds), vert_shade(num_clouds), back_buffer, 700, 700, clouds, perlin_n);
     scene.add( volume_cube );
     // var axesHelper2 = new THREE.AxesHelper( 3 );
     // scene.add( axesHelper2 );

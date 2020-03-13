@@ -11,12 +11,16 @@ function add_back_material(geom, bfs, bvs) {
     return vol;
 };
 
-function add_material(geom, fs, vs, text, window_w, window_h, clouds) {
+function add_material(geom, fs, vs, text, window_w, window_h, clouds, perlin) {
 
     const uniforms = {
         back_text: {
             type: "t",
             value: text.texture,
+        },
+        perlin: {
+            type: "t",
+            value: perlin,
         },
         window_w: { type: "float", value: window_w },
         window_h: { type: "float", value: window_h },
