@@ -11,7 +11,7 @@ function add_back_material(geom, bfs, bvs) {
     return vol;
 };
 
-function add_material(geom, fs, vs, text, window_w, window_h, clouds, perlin) {
+function add_material(geom, fs, vs, text, window_w, window_h, clouds, perlin, p_seed) {
 
     const uniforms = {
         back_text: {
@@ -22,12 +22,15 @@ function add_material(geom, fs, vs, text, window_w, window_h, clouds, perlin) {
             type: "t",
             value: perlin,
         },
+        p_perm: {
+            value: p_seed,
+        },
         window_w: { type: "float", value: window_w },
         window_h: { type: "float", value: window_h },
         clouds: { type: "v3v", value: clouds },
     };
 
-    const material = new THREE.ShaderMaterial({
+    const material = new THREE.RawShaderMaterial({
         uniforms: uniforms,
         transparent: true,
         fragmentShader: fs,
