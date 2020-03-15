@@ -20,6 +20,8 @@ function main() {
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
 
+    const frameBuff = createFrameBuffer(gl);
+
 
 
     // BACKPOS PROGRAM SET UP
@@ -50,12 +52,15 @@ function main() {
     gl.enable(gl.DEPTH_TEST);
     gl.enable(gl.CULL_FACE);
     gl.cullFace(gl.FRONT);
-
+    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+    gl.bindVertexArray(vao);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+    
 
 
     // SET DEFAULT PROGRAM
     m_loc = matrixLocation;
-    gl.useProgram(program);
+    cur_prog = program;
 
     matrix = m4.scale(matrix, 0.5, 0.5, 0.5);
 
@@ -64,15 +69,27 @@ function main() {
     // DRAW DRAW DRAW
     function drawScene() {
 
-        gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+        // DRAW BACK POS TO FRAMEBUFFER
         gl.clearColor(0, 0, 0, 1);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
         
-        gl.uniformMatrix4fv(m_loc, false, matrix);
-        gl.bindVertexArray(vao);
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+        gl.useProgram(back_program);
+        gl.uniformMatrix4fv(back_matrixLocation, false, matrix);
+        gl.cullFace(gl.BACK);
+        gl.bindFramebuffer(gl.FRAMEBUFFER, frameBuff);
       
-        // draw
+        gl.drawElements(gl.TRIANGLES, 36, gl.UNSIGNED_SHORT, 0);
+
+
+        // DRAW ACTUAL SCENE
+        gl.clearColor(0, 0, 0, 1);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+        
+        gl.useProgram(cur_prog);
+        gl.uniformMatrix4fv(m_loc, false, matrix);
+        cull ? gl.cullFace(gl.FRONT) : gl.cullFace(gl.BACK);
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    
         gl.drawElements(gl.TRIANGLES, 36, gl.UNSIGNED_SHORT, 0);
         requestAnimationFrame(drawScene);
         

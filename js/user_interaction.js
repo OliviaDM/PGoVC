@@ -2,6 +2,8 @@
 let scenes = [];
 let index = 0;
 let m_loc = null;
+let cur_prog;
+let cull = true;
 
 let mouseDown = false,
     mouseX = 0,
@@ -35,16 +37,16 @@ function onMouseUp(evt) {
 
 // let cur_scene = scene;
 
-function switchScene(evt, gl) {
+function switchScene(evt) {
     evt.preventDefault();
     index = (index + 1) % scenes.length;
-    gl.useProgram(scenes[index][0]);
+    cur_prog = scenes[index][0];
     m_loc = scenes[index][1];
-    scenes[index][2] ? gl.cullFace(gl.FRONT) : gl.cullFace(gl.BACK);
+    cull = scenes[index][2];
 }
 
 
-function evSetUp(canvas, gl) {
+function evSetUp(canvas) {
     canvas.addEventListener('mousemove', function (e) {
         onMouseMove(e);
     }, false);
@@ -55,7 +57,7 @@ function evSetUp(canvas, gl) {
         onMouseUp(e);
     }, false);
     canvas.addEventListener('contextmenu', function (e) {
-        switchScene(e, gl);
+        switchScene(e);
     }, false);
 }
 
