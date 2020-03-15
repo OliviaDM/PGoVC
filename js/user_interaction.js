@@ -1,4 +1,8 @@
 //USER INTERACTION
+let scenes = [];
+let index = 0;
+let m_loc = null;
+
 let mouseDown = false,
     mouseX = 0,
     mouseY = 0;
@@ -31,16 +35,16 @@ function onMouseUp(evt) {
 
 // let cur_scene = scene;
 
-function switchScene(evt) {
-    // evt.preventDefault();
-    // if (cur_scene === scene) {
-    //     cur_scene = back_scene;
-    // } else {
-    //     cur_scene = scene;
-    // }
+function switchScene(evt, gl) {
+    evt.preventDefault();
+    index = (index + 1) % scenes.length;
+    gl.useProgram(scenes[index][0]);
+    m_loc = scenes[index][1];
+    scenes[index][2] ? gl.cullFace(gl.FRONT) : gl.cullFace(gl.BACK);
 }
 
-function evSetUp(canvas) {
+
+function evSetUp(canvas, gl) {
     canvas.addEventListener('mousemove', function (e) {
         onMouseMove(e);
     }, false);
@@ -51,7 +55,7 @@ function evSetUp(canvas) {
         onMouseUp(e);
     }, false);
     canvas.addEventListener('contextmenu', function (e) {
-        switchScene(e);
+        switchScene(e, gl);
     }, false);
 }
 

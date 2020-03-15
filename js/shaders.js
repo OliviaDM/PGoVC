@@ -1,6 +1,6 @@
 
 //MAIN SHADERS
-function vert_shade(num_clouds) {
+function vert_shade1(num_clouds) {
     const vs = `
 
     uniform vec4 clouds[${num_clouds}];
@@ -32,7 +32,7 @@ function vert_shade(num_clouds) {
     return vs;
 }
 
-function frag_shade(num_clouds) {
+function frag_shade1(num_clouds) {
     const fs = `#version 300 es
     precision mediump float;
 
@@ -208,11 +208,58 @@ function perlin() {
 
 
 
+//FRONT POSITION SHADERS
+
+const front_vert_shade = `#version 300 es
+in vec4 a_position;
+
+uniform mat4 m_matrix;
+
+out vec4 v_pos;
+
+void main() {
+
+    gl_Position = m_matrix * a_position;
+    v_pos = gl_Position + (0.5, 0.5, 0.5, 0.5);
+
+}`
+
+const front_frag_shade = `#version 300 es
+precision mediump float;
+
+in vec4 v_pos;
+
+out vec4 outColour;
+
+void main() {
+
+    outColour = v_pos;
+
+}`
+
+function front_prog(gl, positionBuffer, vao) {
+    const vertexShader = createShader(gl, gl.VERTEX_SHADER, front_vert_shade);
+    const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, front_frag_shade);
+    const program = createProgram(gl, vertexShader, fragmentShader);
+    gl.useProgram(program);
+
+    const posAttribLocation = gl.getAttribLocation(program, "a_position");
+    
+    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+    gl.bindVertexArray(vao);
+    gl.enableVertexAttribArray(posAttribLocation);
+    gl.vertexAttribPointer(posAttribLocation, 3, gl.FLOAT, false, 0, 0);
+
+    const matrixLocation = gl.getUniformLocation(program, "m_matrix");
+
+    return [program, matrixLocation];
+}
 
 
 
 
 //BACK POSITION SHADERS
+
 const back_vert_shade = `#version 300 es
 in vec4 a_position;
 in vec4 a_col;
@@ -225,7 +272,7 @@ out vec4 v_col;
 void main() {
     
     gl_Position = m_matrix * a_position;
-    v_back_pos = gl_Position*0.5 + (0.5, 0.5, 0.5, 0.5); 
+    v_back_pos = gl_Position + (0.5, 0.5, 0.5, 0.5); 
     v_col = a_col;
 
 }`;
@@ -245,8 +292,8 @@ void main() {
 }`;
 
 function back_prog(gl, positionBuffer, vao) {
-    let vertexShader = createShader(gl, gl.VERTEX_SHADER, back_vert_shade);
-    let fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, back_frag_shade);
+    const vertexShader = createShader(gl, gl.VERTEX_SHADER, back_vert_shade);
+    const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, back_frag_shade);
     const back_program = createProgram(gl, vertexShader, fragmentShader);
     gl.useProgram(back_program);
 
@@ -266,8 +313,57 @@ function back_prog(gl, positionBuffer, vao) {
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colours), gl.STATIC_DRAW);
 
     const matrixLocation = gl.getUniformLocation(back_program, "m_matrix");
-    matrix = m4.scale(matrix, 0.5, 0.5, 0.5);
-    gl.uniformMatrix4fv(matrixLocation, false, matrix);
 
     return [back_program, matrixLocation];
+}
+
+
+
+
+
+// MAIN PROGRAM SHADERS
+
+const vert_shade = `#version 300 es
+in vec4 a_position;
+
+uniform mat4 m_matrix;
+
+out vec4 v_pos;
+
+void main() {
+
+    gl_Position = m_matrix * a_position;
+    v_pos = gl_Position + (0.5, 0.5, 0.5, 0.5);
+
+}`
+
+const frag_shade = `#version 300 es
+precision mediump float;
+
+in vec4 v_pos;
+
+out vec4 outColour;
+
+void main() {
+
+    outColour = v_pos;
+
+}`
+
+function prog(gl, positionBuffer, vao) {
+    const vertexShader = createShader(gl, gl.VERTEX_SHADER, vert_shade);
+    const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, frag_shade);
+    const program = createProgram(gl, vertexShader, fragmentShader);
+    gl.useProgram(program);
+
+    const posAttribLocation = gl.getAttribLocation(program, "a_position");
+    
+    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+    gl.bindVertexArray(vao);
+    gl.enableVertexAttribArray(posAttribLocation);
+    gl.vertexAttribPointer(posAttribLocation, 3, gl.FLOAT, false, 0, 0);
+
+    const matrixLocation = gl.getUniformLocation(program, "m_matrix");
+
+    return [program, matrixLocation];
 }

@@ -10,7 +10,7 @@ function main() {
 
 
 
-    //GEOMETRY SET UP
+    // GEOMETRY SET UP
     var positionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
@@ -22,47 +22,58 @@ function main() {
 
 
 
-    //BACKPOS PROGRAM SET UP
+    // BACKPOS PROGRAM SET UP
     const b_p = back_prog(gl, positionBuffer, vao);
     const back_program = b_p[0];
     const back_matrixLocation = b_p[1];
+    scenes.push([back_program, back_matrixLocation, false]);
+    
+    // FRONTPOS PROGRAM SET UP
+    const f_p = front_prog(gl, positionBuffer, vao);
+    const front_program = f_p[0];
+    const front_matrixLocation = f_p[1];
+    scenes.push([front_program, front_matrixLocation, true]);
 
 
 
-    //FRONTPOS PROGRAM SET UP
-
-
-
+    // MAIN PROGRAM SET UP
+    const p = prog(gl, positionBuffer, vao);
+    const program = p[0];
+    const matrixLocation = p[1];
+    scenes.push([program, matrixLocation, true]);
 
     
 
-    var rotation = 0.001;
-    evSetUp(canvas);
+    // SET UP THE CANVAS
+    evSetUp(canvas, gl);
+
+    gl.enable(gl.DEPTH_TEST);
+    gl.enable(gl.CULL_FACE);
+    gl.cullFace(gl.FRONT);
 
 
-//   webglUtils.resizeCanvasToDisplaySize(gl.canvas);
 
+    // SET DEFAULT PROGRAM
+    m_loc = matrixLocation;
+    gl.useProgram(program);
+
+    matrix = m4.scale(matrix, 0.5, 0.5, 0.5);
+
+
+
+    // DRAW DRAW DRAW
     function drawScene() {
-
-        // matrix = m4.yRotate(matrix, rotation);
-        // matrix = m4.xRotate(matrix, rotation*0.5);
 
         gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
         gl.clearColor(0, 0, 0, 1);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-        gl.enable(gl.DEPTH_TEST);
-        gl.enable(gl.CULL_FACE);
-        gl.cullFace(gl.BACK);
         
-        gl.useProgram(back_program);
-        gl.uniformMatrix4fv(back_matrixLocation, false, matrix);
+        gl.uniformMatrix4fv(m_loc, false, matrix);
         gl.bindVertexArray(vao);
-
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
       
         // draw
         gl.drawElements(gl.TRIANGLES, 36, gl.UNSIGNED_SHORT, 0);
-
         requestAnimationFrame(drawScene);
         
     }
