@@ -204,23 +204,70 @@ function perlin() {
 
 
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
 
 //BACK POSITION SHADERS
-const back_vert_shade = `
-varying vec4 cur_pos; 
+const back_vert_shade = `#version 300 es
+in vec4 a_position;
+in vec4 a_col;
+
+uniform mat4 m_matrix;
+
+out vec4 v_back_pos;
+out vec4 v_col;
 
 void main() {
     
-    vec4 modelViewPosition = modelViewMatrix * vec4(position, 1.0);
-    cur_pos = projectionMatrix * modelViewPosition;  
-    gl_Position = cur_pos;  
+    gl_Position = m_matrix * a_position;
+    v_back_pos = gl_Position*0.5 + (0.5, 0.5, 0.5, 0.5); 
+    v_col = a_col;
 
 }`;
 
-const back_frag_shade = `
-varying vec4 cur_pos;
+const back_frag_shade = `#version 300 es
+precision mediump float;
+
+in vec4 v_back_pos;
+in vec4 v_col;
+
+out vec4 outColour;
 
 void main() {
 
-    gl_FragColor = vec4(cur_pos.xy, (cur_pos.z + 0.99)*100.0, 1.0)*0.5 + vec4(0.5, 0.5, 0.5, 0.5);
+    outColour = vec4(v_back_pos.xyz, 1);
+    
 }`;
+
+function back_prog(gl, positionBuffer, vao) {
+    let vertexShader = createShader(gl, gl.VERTEX_SHADER, back_vert_shade);
+    let fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, back_frag_shade);
+    const back_program = createProgram(gl, vertexShader, fragmentShader);
+    gl.useProgram(back_program);
+
+    const posAttribLocation = gl.getAttribLocation(back_program, "a_position");
+    
+    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+    gl.bindVertexArray(vao);
+    gl.enableVertexAttribArray(posAttribLocation);
+    gl.vertexAttribPointer(posAttribLocation, 3, gl.FLOAT, false, 0, 0);
+
+    const colAttribLocation = gl.getAttribLocation(back_program, "a_col");
+
+    const colBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, colBuffer);
+    gl.enableVertexAttribArray(colAttribLocation);
+    gl.vertexAttribPointer(colAttribLocation, 3, gl.FLOAT, false, 0, 0);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colours), gl.STATIC_DRAW);
+
+    const matrixLocation = gl.getUniformLocation(back_program, "m_matrix");
+    matrix = m4.scale(matrix, 0.5, 0.5, 0.5);
+    gl.uniformMatrix4fv(matrixLocation, false, matrix);
+
+    return [back_program, matrixLocation];
+}

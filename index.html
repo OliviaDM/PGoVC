@@ -2,15 +2,25 @@
 <html>
 	<head>
 		<meta charset="utf-8">
+		<meta name = "viewport" content = "width=device-width, initial-scale=1.0, user-scalable=yes">
 		<title>Procedural Generation of Volumetric Clouds</title>
-		<style>
+		<!-- <style>
 			body { margin: 0; }
 			canvas { width: 700px; height: 700px }
-		</style>
+		</style> -->
 	</head>
+
 	<body>
+
+		<canvas id = "c" width = "700" height = "700"></canvas>
+
 		<img src="noise/01perlin_contrasted.png" alt="noise" height="700" width="700">
+
         <script src="three.js-master/build/three.js"></script>
+        <script type="text/javascript" src="js/hard_coded.js"></script>
+        <script type="text/javascript" src="js/user_interaction.js"></script>
+        <script type="text/javascript" src="js/gl_helpers.js"></script>
+        <script type="text/javascript" src="js/matrix_op.js"></script>
         <script type="text/javascript" src="js/render_info.js"></script>
         <script type="text/javascript" src="js/clouds_info.js"></script>
         <script type="text/javascript" src="js/shaders.js"></script>
@@ -21,4 +31,5 @@
         </script>
 
 	</body>
+
 </html>
