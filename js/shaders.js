@@ -1,134 +1,5 @@
-
-//MAIN SHADERS
-function vert_shade1(num_clouds) {
-    const vs = `
-
-    uniform vec4 clouds[${num_clouds}];
-    uniform mat4 projectionMatrix;
-    uniform mat4 modelViewMatrix;
-
-    varying vec4 temp_front_pos; 
-    varying vec4 new_clouds[${num_clouds}];
-    varying float radiuses[${num_clouds}];
-
-    attribute vec3 position;
-
-    vec4 translate_point(vec3 point) {
-        return projectionMatrix * (modelViewMatrix * vec4(point, 1.0));
-    }
-
-    void main() {
-        
-        for (int i = 0; i < ${num_clouds}; i++) {
-            new_clouds[i] = translate_point(clouds[i].xyz);
-            radiuses[i] = clouds[i].w;
-        }
-        
-        vec4 modelViewPosition = modelViewMatrix * vec4(position, 1.0);
-        temp_front_pos = projectionMatrix * modelViewPosition;  
-        gl_Position = temp_front_pos; 
-    }
-    `;
-    return vs;
-}
-
-function frag_shade1(num_clouds) {
-    const fs = `#version 300 es
-    precision mediump float;
-
-    in vec4 temp_front_pos;
-    in vec4 new_clouds[${num_clouds}];
-    in float radiuses[${num_clouds}];
-
-    uniform sampler2D back_text;
-    uniform sampler2D perlin;
-    uniform float window_w;
-    uniform float window_h;
-
-    out vec4 fColor;
-
-
-    ${perlin()}
-
-
-    //SAMPLING FUNCTIONS
-    float cloud_density(vec4 cld, float rad, vec3 pos) {
-        vec3 cloud_center = vec3(cld.xy, (cld.z + 0.99)*100.00)*0.5 + vec3(0.5, 0.5, 0.5);
-        float val = ((rad - length(cloud_center - pos)) / rad)*0.7;
-        return max(0.0, val);
-    }
-
-    float sample_clouds(vec3 pos) {
-        float val = 0.0;
-        ${sample_clouds_loop(num_clouds)}
-        return val;
-    }
-
-    float sample_point(vec3 pos) {
-        return sample_clouds(pos);
-    }
-
-
-
-
-
-
-
-
-
-
-    void main() {
-        
-        //                                  GET BACK POSITION OF CUBE
-        vec2 screen_coord = gl_FragCoord.xy;
-        vec4 back_pos = texture( back_text, vec2(screen_coord.x / window_w, screen_coord.y / window_h) );
-        vec4 perlin_noise = texture( perlin, vec2(screen_coord.x / window_w, screen_coord.y / window_h) );
-        
-        
-        //                                  SET UP
-        vec4 front_pos = vec4(temp_front_pos.xy, (temp_front_pos.z + 0.99)*100.00, 1.0)*0.5 + vec4(0.5, 0.5, 0.5, 0.5);
-        float step_size = 0.01;
-        vec4 step_dir = vec4(0.0, 0.0, step_size, 0.0);
-        vec4 cur_pos = front_pos;
-        float total_alpha = 0.0;
-
-        //                                  SAMPLE LOOP
-        for (int i = 0; i < 200; i++) {
-            total_alpha += sample_point(cur_pos.xyz) / 40.0;
-            cur_pos += step_dir;
-            if (cur_pos.z >= back_pos.z) {
-                break;
-            }
-        }
-
-        // float diff = back_pos.z - front_pos.z;
-
-        fColor = vec4(1.0, 1.0, 1.0, total_alpha - perlin_noise.x*0.05);
-
-    }`;
-    return fs;
-}
-
-function sample_clouds_loop(num_clouds) {
-    str = ``;
-    for (i = 0; i < num_clouds; i++) {
-        str += `val += cloud_density(new_clouds[${i}], radiuses[${i}], pos);\n`
-    }
-    return str;
-}
-
-
-
-
-
-
-
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-//FRONT POSITION SHADERS
+//FRONT POSITION SHADERS 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 const front_vert_shade = `#version 300 es
 in vec4 a_position;
@@ -179,6 +50,7 @@ function front_prog(gl, positionBuffer, vao) {
 
 
 //BACK POSITION SHADERS
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 const back_vert_shade = `#version 300 es
 in vec4 a_position;
@@ -242,13 +114,15 @@ function back_prog(gl, positionBuffer, vao) {
 
 
 // MAIN PROGRAM SHADERS
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 const sample_step = 0.02;
 const cloud_num = 12;
 
-const perlin = `uniform int p_perm[512];
+const perlin = `uniform int p_perm[256];
 
 int hash(int xi, int yi, int zi) {
-    return p_perm[ p_perm[ p_perm[ xi ]+ yi ]+ zi ];
+    return p_perm[ (p_perm[ (p_perm[ xi ]+ yi) % 256 ]+ zi) % 256 ];
 }
 
 float fade(float t) {
@@ -309,13 +183,13 @@ float perlin_noise(vec3 pos, float scale) {
     float w = fade(zf);
 
     int aaa = hash(xi, yi, zi);
-    int aba = hash(xi, yi + 1, zi);
-    int aab = hash(xi, yi, zi + 1);
-    int abb = hash(xi, yi + 1, zi + 1);
-    int baa = hash(xi + 1, yi, zi);
-    int bba = hash(xi + 1, yi + 1, zi);
-    int bab = hash(xi + 1, yi, zi + 1);
-    int bbb = hash(xi + 1, yi + 1, zi + 1);
+    int aba = hash(xi, (yi + 1) % 256, zi);
+    int aab = hash(xi, yi, (zi + 1) % 256);
+    int abb = hash(xi, (yi + 1) % 256, (zi + 1) % 256);
+    int baa = hash((xi + 1) % 256, yi, zi);
+    int bba = hash((xi + 1) % 256, (yi + 1) % 256, zi);
+    int bab = hash((xi + 1) % 256, yi, (zi + 1) % 256);
+    int bbb = hash((xi + 1) % 256, (yi + 1) % 256, (zi + 1) % 256);
 
     float x1 = lerp(grad(aaa, xf, yf, zf), grad(baa, xf+1.0, yf, zf), u);
     float x2 = lerp(grad(aba, xf, yf+1.0, zf), grad(bba, xf+1.0, yf+1.0, zf), u);
@@ -339,7 +213,8 @@ float layered_perlin(vec3 pos, float small, float medium, float big) {
 
 
 
-
+// ^ HELPER FUNCTIONS 
+// v SHADERS
 
 
 
@@ -356,6 +231,9 @@ void main() {
     v_pos = 0.5*a_position + (0.5, 0.5, 0.5, 0.5);
 
 }`
+
+
+
 
 const frag_shade = `#version 300 es
 precision mediump float;
@@ -405,7 +283,6 @@ void main() {
 
 
     outColour = vec4(1.0, 1.0, 1.0, alpha);
-    // outColour = vec4(p, p, p, 1.0);
 
 }`;
 
