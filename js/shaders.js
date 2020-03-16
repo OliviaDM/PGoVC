@@ -117,87 +117,7 @@ function sample_clouds_loop(num_clouds) {
     return str;
 }
 
-function perlin() {
-    return `uniform int p_perm[512];
 
-
-    int hash(int xi, int yi, int zi) {
-        return p_perm[ p_perm[ p_perm[ xi ]+ yi ]+ zi ];
-    }
-    
-    float fade(float t) {
-        return -t * t * t * (t * (t * 6.0 + 15.0) + 10.0);
-    }
-    
-    float grad(int hash, float x, float y, float z) {
-        
-        float u = -y;
-        if (hash < 128) { 
-            u = -x; 
-        }
-
-        float v = -z;
-        if (hash < 64) {
-            v = -y;
-        } else if ((hash >= 192 && hash < 208) || (hash >= 224 && hash < 240)) {
-            v = -x;
-        }
-
-        if (hash >= 128) {
-            hash -= 128;
-        }
-        if (hash >= 64) {
-            hash -= 64;
-        }
-        if (hash >= 32) {
-            u = -u;
-            hash -= 32;
-        }
-        if (hash >= 16) {
-            v = -v;
-        }
-
-        return u + v;
-    }
-    
-    float lerp(float a, float b, float x) {
-        return a + x * (b - a);
-    }
-    
-    
-    float perlin_noise(float x, float y, float z) {
-    
-        int xi = int(floor(x));
-        int yi = int(floor(y));
-        int zi = int(floor(z));
-        float xf = floor(x) - x;
-        float yf = floor(y) - y;
-        float zf = floor(z) - z;
-    
-        float u = fade(xf);
-        float v = fade(yf);
-        float w = fade(zf);
-    
-        int aaa = hash(xi, yi, zi);
-        int aba = hash(xi, yi + 1, zi);
-        int aab = hash(xi, yi, zi + 1);
-        int abb = hash(xi, yi + 1, zi + 1);
-        int baa = hash(xi + 1, yi, zi);
-        int bba = hash(xi + 1, yi + 1, zi);
-        int bab = hash(xi + 1, yi, zi + 1);
-        int bbb = hash(xi + 1, yi + 1, zi + 1);
-    
-        float x1 = lerp(grad(aaa, xf, yf, zf), grad(baa, xf+1.0, yf, zf), u);
-        float x2 = lerp(grad(aba, xf, yf+1.0, zf), grad(bba, xf+1.0, yf+1.0, zf), u);
-        float y1 = lerp(x1, x2, v);
-    
-        x1 = lerp(grad(aab, xf, yf, zf+1.0), grad(bab, xf+1.0, yf, zf+1.0), u);
-        x2 = lerp(grad(abb, xf, yf+1.0, zf+1.0), grad(bbb, xf+1.0, yf+1.0, zf+1.0), u);
-        float y2 = lerp(x1, x2, v);
-            
-        return (lerp(y1, y2, w)+1.0)/2.0;
-    }`
-}
 
 
 
@@ -325,6 +245,104 @@ function back_prog(gl, positionBuffer, vao) {
 const sample_step = 0.02;
 const cloud_num = 12;
 
+const perlin = `uniform int p_perm[512];
+
+int hash(int xi, int yi, int zi) {
+    return p_perm[ p_perm[ p_perm[ xi ]+ yi ]+ zi ];
+}
+
+float fade(float t) {
+    return -t * t * t * (t * (t * 6.0 + 15.0) + 10.0);
+}
+
+float grad(int hash, float x, float y, float z) {
+    
+    float u = -y;
+    if (hash < 128) { 
+        u = -x; 
+    }
+
+    float v = -z;
+    if (hash < 64) {
+        v = -y;
+    } else if ((hash >= 192 && hash < 208) || (hash >= 224 && hash < 240)) {
+        v = -x;
+    }
+
+    if (hash >= 128) {
+        hash -= 128;
+    }
+    if (hash >= 64) {
+        hash -= 64;
+    }
+    if (hash >= 32) {
+        u = -u;
+        hash -= 32;
+    }
+    if (hash >= 16) {
+        v = -v;
+    }
+
+    return u + v;
+}
+
+float lerp(float a, float b, float x) {
+    return a + x * (b - a);
+}
+
+
+float perlin_noise(vec3 pos, float scale) {
+
+    float x = pos.x * scale;
+    float y = pos.y * scale;
+    float z = pos.z * scale;
+
+    int xi = int(floor(x));
+    int yi = int(floor(y));
+    int zi = int(floor(z));
+    float xf = floor(x) - x;
+    float yf = floor(y) - y;
+    float zf = floor(z) - z;
+
+    float u = fade(xf);
+    float v = fade(yf);
+    float w = fade(zf);
+
+    int aaa = hash(xi, yi, zi);
+    int aba = hash(xi, yi + 1, zi);
+    int aab = hash(xi, yi, zi + 1);
+    int abb = hash(xi, yi + 1, zi + 1);
+    int baa = hash(xi + 1, yi, zi);
+    int bba = hash(xi + 1, yi + 1, zi);
+    int bab = hash(xi + 1, yi, zi + 1);
+    int bbb = hash(xi + 1, yi + 1, zi + 1);
+
+    float x1 = lerp(grad(aaa, xf, yf, zf), grad(baa, xf+1.0, yf, zf), u);
+    float x2 = lerp(grad(aba, xf, yf+1.0, zf), grad(bba, xf+1.0, yf+1.0, zf), u);
+    float y1 = lerp(x1, x2, v);
+
+    x1 = lerp(grad(aab, xf, yf, zf+1.0), grad(bab, xf+1.0, yf, zf+1.0), u);
+    x2 = lerp(grad(abb, xf, yf+1.0, zf+1.0), grad(bbb, xf+1.0, yf+1.0, zf+1.0), u);
+    float y2 = lerp(x1, x2, v);
+        
+    return (lerp(y1, y2, w)+1.0)/2.0;
+}
+
+float layered_perlin(vec3 pos, float small, float medium, float big) {
+
+    float small_p = perlin_noise(pos, small);
+    float medium_p = perlin_noise(pos, medium);
+    float big_p = perlin_noise(pos, big);
+
+    return (small_p + big_p*4.0 + medium_p*3.0)/8.0;
+}`
+
+
+
+
+
+
+
 const vert_shade = `#version 300 es
 in vec4 a_position;
 
@@ -339,7 +357,7 @@ void main() {
 
 }`
 
-frag_shade = `#version 300 es
+const frag_shade = `#version 300 es
 precision mediump float;
 
 in vec4 v_pos;
@@ -348,6 +366,8 @@ uniform sampler2D u_back_text;
 uniform vec4 u_clouds_pos[${cloud_num}];
 
 out vec4 outColour;
+
+${perlin}
 
 float cloud_density(int index, vec3 pos) {
     float rad = u_clouds_pos[index].w;
@@ -374,19 +394,24 @@ void main() {
     float alpha = 0.0;
 
     for (int i = 0; i < int(1.0 / sample_step); i++) {
-        alpha += sample_clouds(cur_pos)*sample_step;
+        float cloud_dens = sample_clouds(cur_pos)*0.05;
+        float p = layered_perlin(cur_pos.xyz, 100.0, 35.0, 10.0);
+        alpha += cloud_dens * p;
         cur_pos = cur_pos + step;
         if (cur_pos.z > back_pos.z) {
             break;
         }
     }
 
+
     outColour = vec4(1.0, 1.0, 1.0, alpha);
+    // outColour = vec4(p, p, p, 1.0);
 
 }`;
 
 function prog(gl, positionBuffer, vao) {
     const vertexShader = createShader(gl, gl.VERTEX_SHADER, vert_shade);
+    console.log(frag_shade);
     const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, frag_shade);
     const program = createProgram(gl, vertexShader, fragmentShader);
     gl.useProgram(program);
@@ -405,6 +430,9 @@ function prog(gl, positionBuffer, vao) {
 
     const cloudLocation = gl.getUniformLocation(program, "u_clouds_pos");
     gl.uniform4fv(cloudLocation, generate_clouds(cloud_num));
+
+    const permLocation = gl.getUniformLocation(program, "p_perm");
+    gl.uniform1iv(permLocation, perm_1);
 
     return [program, matrixLocation];
 }
