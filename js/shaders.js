@@ -220,7 +220,7 @@ out vec4 v_pos;
 void main() {
 
     gl_Position = m_matrix * a_position;
-    v_pos = gl_Position + (0.5, 0.5, 0.5, 0.5);
+    v_pos = 0.5*a_position + (0.5, 0.5, 0.5, 0.5);
 
 }`
 
@@ -272,7 +272,7 @@ out vec4 v_col;
 void main() {
     
     gl_Position = m_matrix * a_position;
-    v_back_pos = gl_Position + (0.5, 0.5, 0.5, 0.5); 
+    v_back_pos = 0.5*a_position + (0.5, 0.5, 0.5, 0.5); 
     v_col = a_col;
 
 }`;
@@ -322,6 +322,8 @@ function back_prog(gl, positionBuffer, vao) {
 
 
 // MAIN PROGRAM SHADERS
+const sample_step = 0.02;
+const cloud_num = 12;
 
 const vert_shade = `#version 300 es
 in vec4 a_position;
@@ -333,22 +335,55 @@ out vec4 v_pos;
 void main() {
 
     gl_Position = m_matrix * a_position;
-    v_pos = gl_Position + (0.5, 0.5, 0.5, 0.5);
+    v_pos = 0.5*a_position + (0.5, 0.5, 0.5, 0.5);
 
 }`
 
-const frag_shade = `#version 300 es
+frag_shade = `#version 300 es
 precision mediump float;
 
 in vec4 v_pos;
 
+uniform sampler2D u_back_text;
+uniform vec4 u_clouds_pos[${cloud_num}];
+
 out vec4 outColour;
+
+float cloud_density(int index, vec3 pos) {
+    float rad = u_clouds_pos[index].w;
+    vec3 center = u_clouds_pos[index].xyz;
+    float val = ((rad - length(center - pos)) / rad)*0.7;
+    return max(0.0, val);
+}
+
+float sample_clouds(vec3 pos) {
+    float val = 0.0;
+    for (int j = 0; j < ${cloud_num}; j++) {
+        val += cloud_density(j, pos);
+    }
+    return min(val, 1.0);
+}
 
 void main() {
 
-    outColour = v_pos;
+    float sample_step = ${sample_step};
+    vec3 cur_pos = v_pos.xyz;
+    vec4 back_pos = texture(u_back_text, vec2(gl_FragCoord.x / 700.0, gl_FragCoord.y / 700.0));
+    vec3 step = sample_step * normalize(back_pos.xyz - v_pos.xyz);
 
-}`
+    float alpha = 0.0;
+
+    for (int i = 0; i < int(1.0 / sample_step); i++) {
+        alpha += sample_clouds(cur_pos)*sample_step;
+        cur_pos = cur_pos + step;
+        if (cur_pos.z > back_pos.z) {
+            break;
+        }
+    }
+
+    outColour = vec4(1.0, 1.0, 1.0, alpha);
+
+}`;
 
 function prog(gl, positionBuffer, vao) {
     const vertexShader = createShader(gl, gl.VERTEX_SHADER, vert_shade);
@@ -364,6 +399,12 @@ function prog(gl, positionBuffer, vao) {
     gl.vertexAttribPointer(posAttribLocation, 3, gl.FLOAT, false, 0, 0);
 
     const matrixLocation = gl.getUniformLocation(program, "m_matrix");
+
+    const textureLocation = gl.getUniformLocation(program, "u_back_text");
+    gl.uniform1i(textureLocation, 0);
+
+    const cloudLocation = gl.getUniformLocation(program, "u_clouds_pos");
+    gl.uniform4fv(cloudLocation, generate_clouds(cloud_num));
 
     return [program, matrixLocation];
 }

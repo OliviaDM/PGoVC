@@ -27,6 +27,7 @@ function createProgram(gl, vertexShader, fragmentShader) {
 
 function createFrameBuffer(gl) {
     const targetTex = gl.createTexture();
+    gl.activeTexture(gl.TEXTURE0 + 0);
     gl.bindTexture(gl.TEXTURE_2D, targetTex);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 700, 700, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
@@ -39,5 +40,5 @@ function createFrameBuffer(gl) {
     gl.framebufferTexture2D(gl.FRAMEBUFFER, attachPoint, gl.TEXTURE_2D, targetTex, 0);
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
-    return frameBuff;
+    return [frameBuff, targetTex];
 }
