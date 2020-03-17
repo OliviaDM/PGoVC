@@ -33,21 +33,17 @@ function main() {
 
     
     // FRONTPOS PROGRAM SET UP
-    const f_p = front_prog(gl, positionBuffer, vao);
-    const front_program = f_p[0];
-    const front_matrixLocation = f_p[1];
-    scenes.push([front_program, front_matrixLocation, true]);
+    scenes.push(front_prog(gl, positionBuffer, vao));
 
     // BACKPOS PROGRAM SET UP
-    const b_p = back_prog(gl, positionBuffer, vao);
-    const back_program = b_p[0];
-    const back_matrixLocation = b_p[1];
-    scenes.push([back_program, back_matrixLocation, false]);
+    scenes.push(back_prog(gl, positionBuffer, vao));
+    back_program = scenes[1][0];
+    back_matrixLocation = scenes[1][1];
 
     
 
     // SET UP THE CANVAS
-    evSetUp(canvas, gl);
+    evSetUp(canvas, gl, positionBuffer, vao);
 
     gl.enable(gl.DEPTH_TEST);
     gl.enable(gl.CULL_FACE);

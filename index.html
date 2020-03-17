@@ -12,16 +12,56 @@
 
 	<body>
 
-		<canvas id = "c" width = "700" height = "700"></canvas>
+		<div id="on_screen">
 
-		<img src="noise/01perlin_contrasted.png" alt="noise" height="700" width="700">
+			<div id="canvas" style="display:inline-block">
+				<canvas id = "c" width = "700" height = "700"></canvas>
+			</div>
+
+			<!-- <img src="noise/01perlin_contrasted.png" alt="noise" height="700" width="700"> -->
+			<div id="user_in" style="display:inline-block;vertical-align:top">
+				<fieldset>
+					<legend>Shader input:</legend>
+					<label for="steps">Step size:</label>   
+					1/ <input type="number" id="steps" name="steps" value="50" min="2" max="1000"><br>
+					<label for="radius">Sphere radius range:</label>   
+					1/ <input type="number" id="radius" name="radius" value="4" min="2" max="10"><br>
+					<label for="s_numb">Number of spheres:</label>   
+					<input type="number" id="s_numb" name="s_numb" value="12" min="1" max="12"><br><br>
+					
+					<legend>Perlin values:</legend>
+					<input type="checkbox" id="p1_bool" name="p1_bool" value="p1" checked>
+					<label for="p1_bool"> Perlin 1 </label>
+					<label for="p1_coeff"> Coefficient: </label>
+					<input type="number" id="p1_coeff" name="p1_coeff" value="1" min="1" max="10">
+					<label for="p1_scale"> Scale: </label>
+					<input type="number" id="p1_scale" name="p1_scale" value="100" min="1" max="255"><br>
+					<input type="checkbox" id="p2_bool" name="p2_bool" value="p2" checked>
+					<label for="p2_bool"> Perlin 2 </label>
+					<label for="p2_coeff"> Coefficient: </label>
+					<input type="number" id="p2_coeff" name="p2_coeff" value="3" min="1" max="10">
+					<label for="p2_scale"> Scale: </label>
+					<input type="number" id="p2_scale" name="p2_scale" value="35" min="1" max="255"><br>
+					<input type="checkbox" id="p3_bool" name="p3_bool" value="p3" checked>
+					<label for="p3_bool"> Perlin 3</label>
+					<label for="p3_coeff"> Coefficient: </label>
+					<input type="number" id="p3_coeff" name="p3_coeff" value="4" min="1" max="10">
+					<label for="p3_scale"> Scale: </label>
+					<input type="number" id="p3_scale" name="p3_scale" value="10" min="1" max="255"><br>
+					
+					<input type="submit" id="sub_butt" value="Submit">
+				</fieldset>
+			</div>
+
+		</div>
+
         <script type="text/javascript" src="js/hard_coded.js"></script>
-        <script type="text/javascript" src="js/user_interaction.js"></script>
         <script type="text/javascript" src="js/gl_helpers.js"></script>
         <script type="text/javascript" src="js/matrix_op.js"></script>
         <script type="text/javascript" src="js/render_info.js"></script>
         <script type="text/javascript" src="js/clouds_info.js"></script>
         <script type="text/javascript" src="js/shaders.js"></script>
+        <script type="text/javascript" src="js/user_interaction.js"></script>
         <script type="text/javascript" src="js/main.js"></script>
 
         <script>
