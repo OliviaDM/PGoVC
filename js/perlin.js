@@ -7,20 +7,20 @@ function perl_sum() {
     let coeff_sum = 0;
 
     if (perl_1[0]) {
-        sum = sum + `perl_total += ${perl_1[2]}.0 * perlin_noise(pos, ${perl_1[1]}.0); \n`;
+        sum = sum + `perl_total += ${perl_1[2]}.0 * perlin_noise(pos, ${perl_1[1]}.0); \n`;  // 97
         coeff_sum += perl_1[2];
     }
     if (perl_2[0]) {
-        sum = sum + `perl_total += ${perl_2[2]}.0 * perlin_noise(pos, ${perl_2[1]}.0); \n`;
+        sum = sum + `perl_total += ${perl_2[2]}.0 * perlin_noise(pos, ${perl_2[1]}.0); \n`;  // 98
         coeff_sum += perl_2[2];
     }
     if (perl_3[0]) {
-        sum = sum + `perl_total += ${perl_3[2]}.0 * perlin_noise(pos, ${perl_3[1]}.0); \n`;
+        sum = sum + `perl_total += ${perl_3[2]}.0 * perlin_noise(pos, ${perl_3[1]}.0); \n`;   // 99 
         coeff_sum += perl_3[2];
     }
 
     if (coeff_sum != 0) {
-        sum = sum + `perl_total = perl_total / ${coeff_sum}.0;\n`
+        sum = sum + `perl_total = perl_total / ${coeff_sum}.0;\n`   // 100
     }
 
     return sum;
@@ -28,7 +28,7 @@ function perl_sum() {
 
 
 function perlin() { 
-    return `uniform int p_perm[256];
+    return `uniform int p_perm[256];  // 10
 
     int hash(int xi, int yi, int zi) {
         return p_perm[ (p_perm[ (p_perm[ xi ]+ yi) % 256 ]+ zi) % 256 ];
@@ -38,7 +38,7 @@ function perlin() {
         return -t * t * t * (t * (t * 6.0 + 15.0) + 10.0);
     }
 
-    float grad(int hash, float x, float y, float z) {
+    float grad(int hash, float x, float y, float z) {   // 20
         
         float u = -y;
         if (hash < 128) { 
@@ -48,7 +48,7 @@ function perlin() {
         float v = -z;
         if (hash < 64) {
             v = -y;
-        } else if ((hash >= 192 && hash < 208) || (hash >= 224 && hash < 240)) {
+        } else if ((hash >= 192 && hash < 208) || (hash >= 224 && hash < 240)) {    // 30
             v = -x;
         }
 
@@ -58,7 +58,7 @@ function perlin() {
         if (hash >= 64) {
             hash -= 64;
         }
-        if (hash >= 32) {
+        if (hash >= 32) {   // 40
             u = -u;
             hash -= 32;
         }
@@ -68,7 +68,7 @@ function perlin() {
 
         return u + v;
     }
-
+     // 50
     float lerp(float a, float b, float x) {
         return a + x * (b - a);
     }
@@ -78,7 +78,7 @@ function perlin() {
 
         float x = pos.x * scale;
         float y = pos.y * scale;
-        float z = pos.z * scale;
+        float z = pos.z * scale;   // 60
 
         int xi = int(floor(x));
         int yi = int(floor(y));
@@ -88,7 +88,7 @@ function perlin() {
         float zf = floor(z) - z;
 
         float u = fade(xf);
-        float v = fade(yf);
+        float v = fade(yf);    // 70
         float w = fade(zf);
 
         int aaa = hash(xi, yi, zi);
@@ -98,7 +98,7 @@ function perlin() {
         int baa = hash((xi + 1) % 256, yi, zi);
         int bba = hash((xi + 1) % 256, (yi + 1) % 256, zi);
         int bab = hash((xi + 1) % 256, yi, (zi + 1) % 256);
-        int bbb = hash((xi + 1) % 256, (yi + 1) % 256, (zi + 1) % 256);
+        int bbb = hash((xi + 1) % 256, (yi + 1) % 256, (zi + 1) % 256);    // 80
 
         float x1 = lerp(grad(aaa, xf, yf, zf), grad(baa, xf+1.0, yf, zf), u);
         float x2 = lerp(grad(aba, xf, yf+1.0, zf), grad(bba, xf+1.0, yf+1.0, zf), u);
@@ -108,19 +108,19 @@ function perlin() {
         x2 = lerp(grad(abb, xf, yf+1.0, zf+1.0), grad(bbb, xf+1.0, yf+1.0, zf+1.0), u);
         float y2 = lerp(x1, x2, v);
             
-        return (lerp(y1, y2, w)+1.0)/2.0;
+        return (lerp(y1, y2, w)+1.0)/2.0;    // 90
     }
 
     float layered_perlin(vec3 pos, float small, float medium, float big) {
 
         float perl_total = 0.0;
 
-        ${perl_sum()}
+        ${perl_sum()}    // 97 - 100
 
         if (perl_total == 0.0) {
             perl_total = 1.0;
         }
 
         return perl_total;
-    }`;
+    }   // 108`;
 }

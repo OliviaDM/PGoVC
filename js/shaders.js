@@ -139,7 +139,7 @@ void main() {
 
 
 function frag_shade() { 
-    return `#version 300 es
+    return `#version 300 es  // 0
     precision mediump float;
 
     in vec4 v_pos;
@@ -149,7 +149,9 @@ function frag_shade() {
 
     out vec4 outColour;
 
-    ${perlin()}
+    ${perlin()} // 10 - 108
+    // 109
+    ${worley()} // 110
 
     float cloud_density(int index, vec3 pos) {
         float rad = u_clouds_pos[index].w;
@@ -173,20 +175,20 @@ function frag_shade() {
         vec4 back_pos = texture(u_back_text, vec2(gl_FragCoord.x / 700.0, gl_FragCoord.y / 700.0));
         vec3 step = sample_step * normalize(back_pos.xyz - v_pos.xyz);
 
-        float alpha = 0.0;
+        // float alpha = 0.0;
 
-        for (int i = 0; i < int(1.0 / sample_step); i++) {
-            float cloud_dens = sample_clouds(cur_pos)*0.05;
-            float p = layered_perlin(cur_pos.xyz, 100.0, 35.0, 10.0);
-            alpha += cloud_dens * p;
-            cur_pos = cur_pos + step;
-            if (cur_pos.z > back_pos.z) {
-                break;
-            }
-        }
+        // for (int i = 0; i < int(1.0 / sample_step); i++) {
+        //     float cloud_dens = sample_clouds(cur_pos)*0.05;
+        //     float p = layered_perlin(cur_pos.xyz, 100.0, 35.0, 10.0);
+        //     alpha += cloud_dens * p;
+        //     cur_pos = cur_pos + step;
+        //     if (cur_pos.z > back_pos.z) {
+        //         break;
+        //     }
+        // }
 
-
-        outColour = vec4(1.0, 1.0, 1.0, alpha);
+        float wor = worley(v_pos.xyz, 20.0);
+        outColour = vec4(wor, wor, wor, 1.0);
 
     }`;
 }
@@ -215,6 +217,14 @@ function prog(gl, positionBuffer, vao) {
 
     const permLocation = gl.getUniformLocation(program, "p_perm");
     gl.uniform1iv(permLocation, perm_1);
+    
+    const n1Location = gl.getUniformLocation(program, "u_n1");
+    const n2Location = gl.getUniformLocation(program, "u_n2");
+    gl.uniform3fv(n1Location, neighbourgs1);
+    gl.uniform3fv(n2Location, neighbourgs2);
+
+    const cOffLocation = gl.getUniformLocation(program, "u_cut_offs");
+    gl.uniform1iv(cOffLocation, cut_offs);
 
     return [program, matrixLocation, true];
 }
