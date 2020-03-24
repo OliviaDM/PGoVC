@@ -125,9 +125,9 @@ function worley() {
     }
 
     int find_cut_off(int hash) {
-        c_o = -1;
+        int c_o = -1;
         for (int i = 0; i < 9; i++) {
-            if ((c_o < 0.0) && (hash <= u_cut_offs[i])) {
+            if ((c_o < 0) && (hash <= u_cut_offs[i])) {
                 c_o = i + 1;
                 break;
             }
@@ -146,7 +146,7 @@ function worley() {
         for (int n = 0; n < pt_num; n++) {
             vec4 next_pt = next_cube_pt(cube_coords, h);
             h = next_pt.w;
-            float dist = length(pos = next_pt.xyz);
+            float dist = length(pos - next_pt.xyz);
             if ((dist < closest_dist) || (closest_dist < 0.0)) {     // 150
                 closest_dist = dist;
                 closest_pt = next_pt.xyz;
@@ -163,8 +163,12 @@ function worley() {
         float yi = floor(pos.y);
         float zi = floor(pos.z);
 
+        // int return_val = find_cut_off(int(w_hash(vec3(xi, yi, zi), 0.0)));
+        // return float(return_val);
+
         float closest_dist = -1.0;
         vec3 closest_pt = vec3(0.0, 0.0, 0.0);
+        float looping = 0.0;
 
         for (int i = 0; i < 27; i++) {
             vec3 cube_coords = vec3(xi + u_n1[i][0], yi + u_n1[i][1], zi + u_n1[i][2]);    // 170
@@ -172,12 +176,13 @@ function worley() {
             if (cube_coords.x >= 0.0 && cube_coords.y >= 0.0 && cube_coords.z >= 0.0 && cube_coords.x < 256.0 && cube_coords.y < 256.0 && cube_coords.z < 256.0){
                 vec4 next_pt = closest_in_cube(cube_coords, pos);
                 if ((next_pt.w < closest_dist) || (closest_dist < 0.0)) {
+                    looping += 0.1;
                     closest_dist = next_pt.w;
                     closest_pt = next_pt.xyz;
                 }
             }
         }
-
+        
         if (closest_dist < 1.0) {
             for (int i = 0; i < 54; i++) {
                 vec3 cube_coords = vec3(xi + u_n2[i][0], yi + u_n2[i][1], zi + u_n2[i][2]);
@@ -185,6 +190,7 @@ function worley() {
                 if (cube_coords.x >= 0.0 && cube_coords.y >= 0.0 && cube_coords.z >= 0.0 && cube_coords.x < 256.0 && cube_coords.y < 256.0 && cube_coords.z < 256.0){
                     vec4 next_pt = closest_in_cube(cube_coords, pos);
                     if ((next_pt.w < closest_dist) || (closest_dist < 0.0)) {
+                        looping += 0.1;
                         closest_dist = next_pt.w;
                         closest_pt = next_pt.xyz;
                     }
@@ -193,6 +199,7 @@ function worley() {
         }
 
         return closest_dist;
+        // return looping;
     }
 
     float worley(vec3 pos, float scale){
