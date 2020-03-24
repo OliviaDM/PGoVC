@@ -1,99 +1,25 @@
-// 
+let worl_1 = [true, 20.0, 2];
+let worl_2 = [true, 5.0, 3];
 
+function worley_sum() {
+    let sum = "";
+    let coeff_sum = 0;
 
+    if (worl_1[0]) {
+        sum = sum + `worl_total += ${worl_1[2]}.0 * worley(pos, ${worl_1[1]}.0); \n`;  // 97
+        coeff_sum += worl_1[2];
+    }
+    if (worl_2[0]) {
+        sum = sum + `worl_total += ${worl_2[2]}.0 * worley(pos, ${worl_2[1]}.0); \n`;  // 98
+        coeff_sum += worl_2[2];
+    }
 
-// def cube_points(xi, yi, zi):
-//     n, h = number_of_points(xi, yi, zi)
-//     points = []
+    if (coeff_sum != 0) {
+        sum = sum + `worl_total = worl_total / ${coeff_sum}.0;\n`   // 100
+    }
 
-//     for i in range(n):
-//         point_coords = []
-
-//         h = hash(xi, yi, zi, h)
-//         point_coords.append(xi + h/255)
-//         h = hash(xi, yi, zi, h)
-//         point_coords.append(yi + h/255)
-//         h = hash(xi, yi, zi, h)
-//         point_coords.append(zi + h/255)
-
-//         points.append(point_coords)
-
-//     return points
-
-
-// def closest_in_cube(x, y, z, pts_arr):
-//     closest_dist = 0
-//     closest_pt = None
-
-//     for pt in pts_arr:
-//         dist = math.sqrt((x-pt[0])**2 + (y-pt[1])**2 + (z-pt[2])**2)
-//         if dist < closest_dist or closest_pt == None:
-//             closest_dist = dist
-//             closest_pt = pt
-
-//     return closest_pt, closest_dist
-
-    
-
-// def cycle_cubes(x, y, z):
-
-//     xi = math.floor(x)
-//     yi = math.floor(y)
-//     zi = math.floor(z)
-
-//     closest_dist = 0
-//     closest_pt = None
-
-//     for n in neighbourgs1:
-//         xj = xi + n[0]
-//         yj = yi + n[1]
-//         zj = zi + n[2]
-
-//         if xj >= 0 and yj >= 0 and zj >= 0 and xj < 256 and yj < 256 and zj < 256:
-//             pt, dist = closest_in_cube(x, y, z, cube_points(xj, yj, zj))
-//             if dist < closest_dist or closest_pt == None:
-//                 closest_dist = dist
-//                 closest_pt = pt
-
-//     if closest_dist > 1:
-//         for n in neighbourgs2:
-//             xj = xi + n[0]
-//             yj = yi + n[1]
-//             zj = zi + n[2]
-
-//             if xj >= 0 and yj >= 0 and zj >= 0 and xj < 256 and yj < 256 and zj < 256:
-//                 pt, dist = closest_in_cube(x, y, z, cube_points(xj, yj, zj))
-//                 if dist < closest_dist or closest_pt == None:
-//                     closest_dist = dist
-//                     closest_pt = pt
-
-//     return closest_dist
-
-    
-
-
-
-
-// def worley(x, y, z):
-
-//     w = cycle_cubes(x, y, z)
-//     if w > 1:
-//         w = 1
-//     return w * 255
-    
-
-
-// im = Image.new('L', (700, 700))
-// pixdata = []
-// # for k in range (0, 700):
-// for i in range (0, 700):
-//     for j in range (0,700):
-//         w1 = worley(20*i/700, 20*j/700, 0)
-//         w2 = worley(5*i/700, 5*j/700, 0)
-//         pixdata.append((4*w2 + 1*w1)/5)
-//         print(i, j)
-// im.putdata(pixdata)
-// im.save('test.png')
+    return sum;
+}
 
 function worley() {
     return `  // 110
@@ -208,15 +134,14 @@ function worley() {
         return 1.0 - w;
     }
 
-    float layered_worley(vec3 pos, float scale1, float coeff1, float scale2, float coeff2) {
-        float w1 = worley(pos, scale1);
-        float w2 = worley(pos, scale2);
+    float layered_worley(vec3 pos) {
+        float worl_total = 0.0;
 
-        float sum = (w1 * coeff1 + w2 * coeff2) / (coeff1 + coeff2);
+        ${worley_sum()}
 
-            sum = 2.0 * (sum * sum);
-
-        return sum;
+        worl_total = 2.0 * worl_total * worl_total;
+        
+        return worl_total;
     }
 
     `

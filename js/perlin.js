@@ -117,10 +117,6 @@ function perlin() {
 
         ${perl_sum()}    // 97 - 100
 
-        if (perl_total == 0.0) {
-            perl_total = 1.0;
-        }
-
         return perl_total;
     }   // 108`;
 }
