@@ -119,6 +119,7 @@ function back_prog(gl, positionBuffer, vao) {
 let sample_step = 0.02;
 let cloud_num = 12;
 let max_rad = 0.25;
+let perlin_worley = 5;
 
 
 const vert_shade = `#version 300 es
@@ -153,6 +154,13 @@ function frag_shade() {
     // 109
     ${worley()} // 110
 
+    float layered_noise(vec3 pos) {
+        float p = layered_perlin(pos);
+        float w = layered_worley(pos);
+
+        return ( ${10 - perlin_worley}.0 * p + ${perlin_worley}.0 * w)/10.0;
+    }
+
     float cloud_density(int index, vec3 pos) {
         float rad = u_clouds_pos[index].w;
         vec3 center = u_clouds_pos[index].xyz;
@@ -175,20 +183,20 @@ function frag_shade() {
         vec4 back_pos = texture(u_back_text, vec2(gl_FragCoord.x / 700.0, gl_FragCoord.y / 700.0));
         vec3 step = sample_step * normalize(back_pos.xyz - v_pos.xyz);
 
-        // float alpha = 0.0;
+        float alpha = 0.0;
 
-        // for (int i = 0; i < int(1.0 / sample_step); i++) {
-        //     float cloud_dens = sample_clouds(cur_pos)*0.05;
-        //     float p = layered_perlin(cur_pos.xyz, 100.0, 35.0, 10.0);
-        //     alpha += cloud_dens * p;
-        //     cur_pos = cur_pos + step;
-        //     if (cur_pos.z > back_pos.z) {
-        //         break;
-        //     }
-        // }
+        for (int i = 0; i < int(1.0 / sample_step); i++) {
+            float cloud_dens = sample_clouds(cur_pos)*0.05;
+            // float p = layered_perlin(cur_pos.xyz, 100.0, 35.0, 10.0);
+            alpha += cloud_dens * layered_noise(cur_pos.xyz);
+            cur_pos = cur_pos + step;
+            if (cur_pos.z > back_pos.z) {
+                break;
+            }
+        }
 
-        float wor = layered_worley(v_pos.xyz);
-        outColour = vec4(wor, wor, wor, 1.0);
+        outColour = vec4(1.0, 1.0, 1.0, alpha);
+        // outColour = vec4(layered_noise(cur_pos.xyz), layered_noise(cur_pos.xyz), layered_noise(cur_pos.xyz), 1.0);
 
     }`;
 }

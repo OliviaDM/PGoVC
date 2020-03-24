@@ -111,7 +111,7 @@ function perlin() {
         return (lerp(y1, y2, w)+1.0)/2.0;    // 90
     }
 
-    float layered_perlin(vec3 pos, float small, float medium, float big) {
+    float layered_perlin(vec3 pos) {
 
         float perl_total = 0.0;
 
