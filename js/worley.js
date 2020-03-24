@@ -175,12 +175,11 @@ function worley() {
             cube_coords.y = float(int(cube_coords.y) % 256);
             cube_coords.z = float(int(cube_coords.z) % 256);
             
-                vec4 next_pt = closest_in_cube(cube_coords, pos);
-                if ((next_pt.w < closest_dist) || (closest_dist < 0.0)) {
-                    closest_dist = next_pt.w;
-                    closest_pt = next_pt.xyz;
-                }
-            
+            vec4 next_pt = closest_in_cube(cube_coords, pos);
+            if ((next_pt.w < closest_dist) || (closest_dist < 0.0)) {
+                closest_dist = next_pt.w;
+                closest_pt = next_pt.xyz;
+            }   
         }
         
         if (closest_dist < 1.0) {
@@ -190,12 +189,11 @@ function worley() {
                 cube_coords.y = float(int(cube_coords.y) % 256);
                 cube_coords.z = float(int(cube_coords.z) % 256);
                 
-                    vec4 next_pt = closest_in_cube(cube_coords, pos);
-                    if ((next_pt.w < closest_dist) || (closest_dist < 0.0)) {
-                        closest_dist = next_pt.w;
-                        closest_pt = next_pt.xyz;
-                    }
-                
+                vec4 next_pt = closest_in_cube(cube_coords, pos);
+                if ((next_pt.w < closest_dist) || (closest_dist < 0.0)) {
+                    closest_dist = next_pt.w;
+                    closest_pt = next_pt.xyz;
+                }             
             }
         }
 
