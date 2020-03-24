@@ -208,5 +208,16 @@ function worley() {
         return 1.0 - w;
     }
 
+    float layered_worley(vec3 pos, float scale1, float coeff1, float scale2, float coeff2) {
+        float w1 = worley(pos, scale1);
+        float w2 = worley(pos, scale2);
+
+        float sum = (w1 * coeff1 + w2 * coeff2) / (coeff1 + coeff2);
+
+            sum = 2.0 * (sum * sum);
+
+        return sum;
+    }
+
     `
 }

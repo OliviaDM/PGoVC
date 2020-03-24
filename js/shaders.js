@@ -187,7 +187,7 @@ function frag_shade() {
         //     }
         // }
 
-        float wor = worley(v_pos.xyz, 20.0);
+        float wor = layered_worley(v_pos.xyz, 20.0, 2.0, 5.0, 3.0);
         outColour = vec4(wor, wor, wor, 1.0);
 
     }`;
