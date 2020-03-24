@@ -168,38 +168,38 @@ function worley() {
 
         float closest_dist = -1.0;
         vec3 closest_pt = vec3(0.0, 0.0, 0.0);
-        float looping = 0.0;
 
         for (int i = 0; i < 27; i++) {
             vec3 cube_coords = vec3(xi + u_n1[i][0], yi + u_n1[i][1], zi + u_n1[i][2]);    // 170
+            cube_coords.x = float(int(cube_coords.x) % 256);
+            cube_coords.y = float(int(cube_coords.y) % 256);
+            cube_coords.z = float(int(cube_coords.z) % 256);
             
-            if (cube_coords.x >= 0.0 && cube_coords.y >= 0.0 && cube_coords.z >= 0.0 && cube_coords.x < 256.0 && cube_coords.y < 256.0 && cube_coords.z < 256.0){
                 vec4 next_pt = closest_in_cube(cube_coords, pos);
                 if ((next_pt.w < closest_dist) || (closest_dist < 0.0)) {
-                    looping += 0.1;
                     closest_dist = next_pt.w;
                     closest_pt = next_pt.xyz;
                 }
-            }
+            
         }
         
         if (closest_dist < 1.0) {
             for (int i = 0; i < 54; i++) {
-                vec3 cube_coords = vec3(xi + u_n2[i][0], yi + u_n2[i][1], zi + u_n2[i][2]);
+                vec3 cube_coords = vec3((xi + u_n2[i][0]), (yi + u_n2[i][1]), (zi + u_n2[i][2]));
+                cube_coords.x = float(int(cube_coords.x) % 256);
+                cube_coords.y = float(int(cube_coords.y) % 256);
+                cube_coords.z = float(int(cube_coords.z) % 256);
                 
-                if (cube_coords.x >= 0.0 && cube_coords.y >= 0.0 && cube_coords.z >= 0.0 && cube_coords.x < 256.0 && cube_coords.y < 256.0 && cube_coords.z < 256.0){
                     vec4 next_pt = closest_in_cube(cube_coords, pos);
                     if ((next_pt.w < closest_dist) || (closest_dist < 0.0)) {
-                        looping += 0.1;
                         closest_dist = next_pt.w;
                         closest_pt = next_pt.xyz;
                     }
-                }
+                
             }
         }
 
         return closest_dist;
-        // return looping;
     }
 
     float worley(vec3 pos, float scale){
@@ -207,7 +207,7 @@ function worley() {
         if (w > 1.0) {
             w = 1.0;
         }
-        return w;
+        return 1.0 - w;
     }
 
     `
