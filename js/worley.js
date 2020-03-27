@@ -92,8 +92,10 @@ function worley() {
         // int return_val = find_cut_off(int(w_hash(vec3(xi, yi, zi), 0.0)));
         // return float(return_val);
 
-        float closest_dist = -1.0;
-        vec3 closest_pt = vec3(0.0, 0.0, 0.0);
+        vec4 next_pt = closest_in_cube(vec3(xi, yi, zi), pos);
+
+        float closest_dist = next_pt.w;
+        vec3 closest_pt = next_pt.xyz;
 
         for (int i = 0; i < 27; i++) {
             vec3 cube_coords = vec3(xi + u_n1[i][0], yi + u_n1[i][1], zi + u_n1[i][2]);    // 170
@@ -101,14 +103,14 @@ function worley() {
             cube_coords.y = float(int(cube_coords.y) % 256);
             cube_coords.z = float(int(cube_coords.z) % 256);
             
-            vec4 next_pt = closest_in_cube(cube_coords, pos);
+            next_pt = closest_in_cube(cube_coords, pos);
             if ((next_pt.w < closest_dist) || (closest_dist < 0.0)) {
                 closest_dist = next_pt.w;
                 closest_pt = next_pt.xyz;
             }   
         }
         
-        if (closest_dist < 1.0) {
+        if (closest_dist > 1.0) {
             for (int i = 0; i < 54; i++) {
                 vec3 cube_coords = vec3((xi + u_n2[i][0]), (yi + u_n2[i][1]), (zi + u_n2[i][2]));
                 cube_coords.x = float(int(cube_coords.x) % 256);

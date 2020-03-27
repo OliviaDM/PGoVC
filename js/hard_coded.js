@@ -108,13 +108,15 @@ for (i = 0; i < 5; i++) {
       if (!((Math.abs(x) == 2 && Math.abs(y) == 2) || (Math.abs(x) == 2 && Math.abs(z) == 2) || (Math.abs(z) == 2 && Math.abs(y) == 2))) {
         if (Math.abs(x) == 2 || Math.abs(y) == 2 || Math.abs(z) == 2) {
           neighbourgs2 = neighbourgs2.concat([x, y, z]);
-        } else {
+        } else if (! (x == 0 && y == 0 && z == 0)) {
           neighbourgs1 = neighbourgs1.concat([x, y, z]);
         }
       }
     }
   }
 } 
+
+console.log(neighbourgs1.length/3);
 
 cut_offs = [50, 107, 164, 207, 233, 246, 252, 254, 255];
     

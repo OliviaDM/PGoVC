@@ -164,7 +164,7 @@ function frag_shade() {
     float cloud_density(int index, vec3 pos) {
         float rad = u_clouds_pos[index].w;
         vec3 center = u_clouds_pos[index].xyz;
-        float val = ((rad - length(center - pos)) / rad)*0.7;
+        float val = ((rad - length(center - pos)) / rad);
         return max(0.0, val);
     }
 
@@ -184,16 +184,27 @@ function frag_shade() {
         vec3 step = sample_step * normalize(back_pos.xyz - v_pos.xyz);
 
         float alpha = 0.0;
-
+        // vec3 first_cloud = vec3(-1.0, -1.0, -1.0);
+        float max_dens = 0.0;
+        
         for (int i = 0; i < int(1.0 / sample_step); i++) {
+            float noise = 1.0;
             float cloud_dens = sample_clouds(cur_pos)*0.05;
-            // float p = layered_perlin(cur_pos.xyz, 100.0, 35.0, 10.0);
-            alpha += cloud_dens * layered_noise(cur_pos.xyz);
+            // if ((first_cloud == vec3(-1.0, -1.0, -1.0))&&(cloud_dens > 0.0)) {
+            //     first_cloud = cur_pos;
+            // }
+            if ((cloud_dens > 0.0) && (cloud_dens < 1.0)) {
+                noise = layered_noise(cur_pos);
+            }
+            alpha += cloud_dens * noise;
             cur_pos = cur_pos + step;
-            if (cur_pos.z > back_pos.z) {
+            if (length(v_pos.xyz - cur_pos) > length(v_pos.xyz - back_pos.xyz)) {
                 break;
             }
         }
+
+        // if (first_cloud != vec3(-1.0, -1.0, -1.0)){
+        // }
 
         outColour = vec4(1.0, 1.0, 1.0, alpha);
         // outColour = vec4(layered_noise(cur_pos.xyz), layered_noise(cur_pos.xyz), layered_noise(cur_pos.xyz), 1.0);
@@ -203,7 +214,7 @@ function frag_shade() {
 
 function prog(gl, positionBuffer, vao) {
     const vertexShader = createShader(gl, gl.VERTEX_SHADER, vert_shade);
-    console.log(frag_shade());
+    // console.log(frag_shade());
     const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, frag_shade());
     const program = createProgram(gl, vertexShader, fragmentShader);
     gl.useProgram(program);
