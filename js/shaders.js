@@ -194,6 +194,7 @@ function frag_shade() {
         float max_dens = 0.0;
         
         for (int i = 0; i < int(1.0 / sample_step); i++) {
+
             float noise = 1.0;
             float cloud_dens = sample_clouds(cur_pos)*0.05;
             // if ((first_cloud == vec3(-1.0, -1.0, -1.0))&&(cloud_dens > 0.0)) {
@@ -202,14 +203,14 @@ function frag_shade() {
             if ((cloud_dens > 0.0) && (cloud_dens < 1.0)) {
                 noise = layered_noise(cur_pos);
             }
-            alpha += cloud_dens * noise;
+            alpha += cloud_dens * noise * noise;
             cur_pos = cur_pos + step;
             if (length(v_pos.xyz - cur_pos) > length(v_pos.xyz - back_pos.xyz)) {
                 break;
             }
         }
 
-        if (alpha < 0.4) {
+        if (alpha < 0.3) {
             alpha = alpha * alpha;
         }
 
@@ -218,7 +219,7 @@ function frag_shade() {
         // if (first_cloud != vec3(-1.0, -1.0, -1.0)){
         // }
 
-        outColour = vec4(1.0, 1.0, 1.0, alpha);
+        outColour = vec4(0.8, 0.8, 0.8, alpha);
         // outColour = vec4(layered_noise(cur_pos.xyz), layered_noise(cur_pos.xyz), layered_noise(cur_pos.xyz), 1.0);
 
     }`;

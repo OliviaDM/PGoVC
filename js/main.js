@@ -69,7 +69,8 @@ function main() {
 
         // DRAW BACK POS TO FRAMEBUFFER
         gl.bindFramebuffer(gl.FRAMEBUFFER, frameBuff);
-        gl.clearColor(91/255, 110/255, 133/255, 1);
+        // gl.clearColor(91/255, 110/255, 133/255, 1);
+        gl.clearColor(0.0, 0.0, 0.0, 1);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
         
         switchProg(back_program, back_matrixLocation, false);
@@ -79,7 +80,8 @@ function main() {
         
         // DRAW ACTUAL SCENE
         gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-        gl.clearColor(91/255, 110/255, 133/255, 1);
+        // gl.clearColor(91/255, 110/255, 133/255, 1);
+        gl.clearColor(0.0, 0.0, 0.0, 1);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
         
         switchProg(cur_prog, m_loc, cull);

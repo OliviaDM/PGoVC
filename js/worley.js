@@ -1,5 +1,5 @@
-let worl_1 = [true, 20.0, 2];
-let worl_2 = [true, 5.0, 3];
+let worl_1 = [true, 20.0, 3];
+let worl_2 = [true, 5.0, 2];
 
 function worley_sum() {
     let sum = "";

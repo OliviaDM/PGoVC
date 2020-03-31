@@ -70,8 +70,8 @@ function switchScene(evt) {
 }
 
 function rotateScene(deltaX, deltaY) {
-    matrix = m4.xRotate(matrix, deltaX / 100);
-    matrix = m4.yRotate(matrix, deltaY / 100);
+    matrix = m4.xRotate(matrix, deltaY / 100);
+    matrix = m4.yRotate(matrix, deltaX / 100);
 }
 
 function submitInput(evt, gl, pb, vao) {
