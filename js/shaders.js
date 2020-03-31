@@ -117,8 +117,6 @@ function back_prog(gl, positionBuffer, vao) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 let sample_step = 0.02;
-let cloud_num = 12;
-let max_rad = 0.25;
 let perlin_worley = 5;
 
 
@@ -147,6 +145,7 @@ function frag_shade() {
 
     uniform sampler2D u_back_text;
     uniform vec4 u_clouds_pos[${cloud_num}];
+    uniform float u_clouds_squish[${cloud_num}];
 
     out vec4 outColour;
 
@@ -161,10 +160,17 @@ function frag_shade() {
         return ( ${10 - perlin_worley}.0 * p + ${perlin_worley}.0 * w)/10.0;
     }
 
+    vec3 unsquish(int index, vec3 pos) {
+        vec3 center = u_clouds_pos[index].xyz;
+        float old_y = (pos.y - center.y) / u_clouds_squish[index];
+        return vec3(pos.x, center.y + old_y, pos.z);
+    }
+
     float cloud_density(int index, vec3 pos) {
+        vec3 unsquished_pos = unsquish(index, pos);
         float rad = u_clouds_pos[index].w;
         vec3 center = u_clouds_pos[index].xyz;
-        float val = ((rad - length(center - pos)) / rad);
+        float val = ((rad - length(center - unsquished_pos)) / rad);
         return max(0.0, val);
     }
 
@@ -203,6 +209,12 @@ function frag_shade() {
             }
         }
 
+        if (alpha < 0.4) {
+            alpha = alpha * alpha;
+        }
+
+        float squish = u_clouds_squish[0];
+
         // if (first_cloud != vec3(-1.0, -1.0, -1.0)){
         // }
 
@@ -214,7 +226,7 @@ function frag_shade() {
 
 function prog(gl, positionBuffer, vao) {
     const vertexShader = createShader(gl, gl.VERTEX_SHADER, vert_shade);
-    // console.log(frag_shade());
+    console.log(frag_shade());
     const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, frag_shade());
     const program = createProgram(gl, vertexShader, fragmentShader);
     gl.useProgram(program);
@@ -232,7 +244,10 @@ function prog(gl, positionBuffer, vao) {
     gl.uniform1i(textureLocation, 0);
 
     const cloudLocation = gl.getUniformLocation(program, "u_clouds_pos");
-    gl.uniform4fv(cloudLocation, generate_clouds(cloud_num, max_rad));
+    gl.uniform4fv(cloudLocation, cloud_a);
+
+    const squishLocation = gl.getUniformLocation(program, "u_clouds_squish");
+    gl.uniform1fv(squishLocation, squish_a);
 
     const permLocation = gl.getUniformLocation(program, "p_perm");
     gl.uniform1iv(permLocation, perm_1);
