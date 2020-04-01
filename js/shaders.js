@@ -146,6 +146,7 @@ function frag_shade() {
     uniform sampler2D u_back_text;
     uniform vec4 u_clouds_pos[${cloud_num}];
     uniform float u_clouds_squish[${cloud_num}];
+    uniform vec3 u_light_pos;
 
     out vec4 outColour;
 
@@ -174,13 +175,23 @@ function frag_shade() {
         return max(0.0, val);
     }
 
+    int first_cloud = -1;
+    vec3 first_cloud_pos = vec3(0.0, 0.0, 0.0);
+
     float sample_clouds(vec3 pos) {
         float val = 0.0;
         for (int j = 0; j < ${cloud_num}; j++) {
-            val += cloud_density(j, pos);
+            float d = cloud_density(j, pos);
+            val += d;
+            if ((first_cloud == -1) && (d > 0.0)) {
+                first_cloud = j;
+                first_cloud_pos = pos;
+            }
         }
         return min(val, 1.0);
     }
+
+    ${light_helpers()}
 
     void main() {
 
@@ -210,16 +221,14 @@ function frag_shade() {
             }
         }
 
-        if (alpha < 0.3) {
-            alpha = alpha * alpha;
-        }
+        ${light_rend()}
 
         float squish = u_clouds_squish[0];
 
         // if (first_cloud != vec3(-1.0, -1.0, -1.0)){
         // }
 
-        outColour = vec4(0.8, 0.8, 0.8, alpha);
+        outColour = vec4(cl_col, alpha);
         // outColour = vec4(layered_noise(cur_pos.xyz), layered_noise(cur_pos.xyz), layered_noise(cur_pos.xyz), 1.0);
 
     }`;
@@ -246,6 +255,9 @@ function prog(gl, positionBuffer, vao) {
 
     const cloudLocation = gl.getUniformLocation(program, "u_clouds_pos");
     gl.uniform4fv(cloudLocation, cloud_a);
+
+    const lightLocation = gl.getUniformLocation(program, "u_light_pos");
+    gl.uniform3fv(lightLocation, light_pos);
 
     const squishLocation = gl.getUniformLocation(program, "u_clouds_squish");
     gl.uniform1fv(squishLocation, squish_a);
